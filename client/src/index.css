@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Wave animation keyframes */
+@keyframes wave-pulse-fast {
+  0% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes wave-pulse-medium {
+  0% {
+    transform: scale(1);
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+}
+
+@keyframes wave-pulse-slow {
+  0% {
+    transform: scale(1);
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* Animation classes */
+.animate-wave-pulse-fast {
+  animation: wave-pulse-fast 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-wave-pulse-medium {
+  animation: wave-pulse-medium 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-wave-pulse-medium-delayed {
+  animation: wave-pulse-medium 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation-delay: 0.5s;
+}
+
+.animate-wave-pulse-slow {
+  animation: wave-pulse-slow 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-wave-pulse-slow-delayed {
+  animation: wave-pulse-slow 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation-delay: 0.75s;
+}
