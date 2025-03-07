@@ -1,12 +1,28 @@
 import React from "react";
 import { MeetingProvider, useMeeting } from "@videosdk.live/react-sdk";
 import { Toaster } from "react-hot-toast";
-import { User, Languages } from "lucide-react";
+import { Languages, UserPlus, Users, Globe2 } from "lucide-react";
 import useMeetingStore from "./store/meetingStore";
 import ParticipantCard from "./components/ParticipantCard";
 import TranslationPanel from "./components/TranslationPanel";
 import MeetingControls from "./components/MeetingControls";
 import toast from "react-hot-toast";
+
+// Common languages that people might want to use
+const LANGUAGES = [
+  { code: "en", name: "English" },
+  { code: "es", name: "Spanish" },
+  { code: "fr", name: "French" },
+  { code: "de", name: "German" },
+  { code: "it", name: "Italian" },
+  { code: "pt", name: "Portuguese" },
+  { code: "ru", name: "Russian" },
+  { code: "zh", name: "Chinese" },
+  { code: "ja", name: "Japanese" },
+  { code: "ko", name: "Korean" },
+  { code: "hi", name: "Hindi" },
+  { code: "ar", name: "Arabic" },
+];
 
 interface MeetingViewProps {
   setMeetingId: (meetingId: string | null) => void;
@@ -16,7 +32,6 @@ const MeetingView = ({ setMeetingId }: MeetingViewProps) => {
   const { participants } = useMeeting();
   const { aiJoined } = useMeetingStore();
 
-  // Identify AI participant by checking if the display name includes "AI" or "Bot"
   const isAIParticipant = (participantId: string) => {
     const participant = participants.get(participantId);
     const displayName = participant?.displayName?.toLowerCase() || "";
@@ -58,9 +73,15 @@ function App() {
   const { token } = useMeetingStore();
   const [meetingId, setMeetingId] = React.useState<string | null>(null);
   const [userName, setUserName] = React.useState("");
+  const [selectedLanguage, setSelectedLanguage] = React.useState(
+    LANGUAGES[0].code
+  );
   const [isCreatingMeeting, setIsCreatingMeeting] = React.useState(false);
   const [isJoiningMeeting, setIsJoiningMeeting] = React.useState(false);
   const [joinMeetingId, setJoinMeetingId] = React.useState("");
+  const [mode, setMode] = React.useState<"select" | "create" | "join">(
+    "select"
+  );
 
   const validateMeetingId = async (roomId: string) => {
     try {
@@ -139,6 +160,135 @@ function App() {
     }
   };
 
+  const renderContent = () => {
+    if (mode === "select") {
+      return (
+        <div className="space-y-6">
+          <button
+            onClick={() => setMode("create")}
+            className="w-full px-6 py-4 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-colors duration-200 flex items-center justify-center space-x-3"
+          >
+            <UserPlus className="w-6 h-6" />
+            <span>Create New Meeting</span>
+          </button>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-gray-800 text-gray-400">Or</span>
+          </div>
+          <button
+            onClick={() => setMode("join")}
+            className="w-full px-6 py-4 bg-green-600 hover:bg-green-700 rounded-lg text-white font-medium transition-colors duration-200 flex items-center justify-center space-x-3"
+          >
+            <Users className="w-6 h-6" />
+            <span>Join Existing Meeting</span>
+          </button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        <div>
+          <label
+            htmlFor="userName"
+            className="block text-white text-sm font-medium mb-2"
+          >
+            Enter Your Name
+          </label>
+          <input
+            type="text"
+            id="userName"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value.trim())}
+            placeholder="Your name"
+            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="language"
+            className="text-white text-sm font-medium mb-2 flex items-center gap-2"
+          >
+            <Globe2 className="w-4 h-4" />
+            Select Your Language
+          </label>
+          <select
+            id="language"
+            value={selectedLanguage}
+            onChange={(e) => setSelectedLanguage(e.target.value)}
+            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            {LANGUAGES.map((lang) => (
+              <option key={lang.code} value={lang.code}>
+                {lang.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {mode === "join" && (
+          <div>
+            <label
+              htmlFor="meetingId"
+              className="block text-white text-sm font-medium mb-2"
+            >
+              Meeting ID
+            </label>
+            <input
+              type="text"
+              id="meetingId"
+              value={joinMeetingId}
+              onChange={(e) => setJoinMeetingId(e.target.value.trim())}
+              placeholder="Enter Meeting ID"
+              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+        )}
+
+        <div className="space-y-4">
+          {mode === "create" ? (
+            <button
+              onClick={createMeeting}
+              disabled={!userName || isCreatingMeeting}
+              className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg text-white font-medium transition-colors duration-200 flex items-center justify-center space-x-2"
+            >
+              {isCreatingMeeting ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+              ) : (
+                <>
+                  <UserPlus className="w-5 h-5" />
+                  <span>Create Meeting</span>
+                </>
+              )}
+            </button>
+          ) : (
+            <button
+              onClick={joinMeeting}
+              disabled={!userName || !joinMeetingId || isJoiningMeeting}
+              className="w-full px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg text-white font-medium transition-colors duration-200 flex items-center justify-center space-x-2"
+            >
+              {isJoiningMeeting ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+              ) : (
+                <>
+                  <Users className="w-5 h-5" />
+                  <span>Join Meeting</span>
+                </>
+              )}
+            </button>
+          )}
+
+          <button
+            onClick={() => setMode("select")}
+            className="w-full px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-medium transition-colors duration-200"
+          >
+            Back
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   if (!meetingId) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -158,69 +308,11 @@ function App() {
             Connect with others and break language barriers with our real-time
             translation feature.
           </p>
-          <div className="bg-gray-800 p-8 rounded-lg shadow-xl max-w-md w-full mb-6">
-            <div className="mb-6">
-              <label
-                htmlFor="userName"
-                className="block text-white text-sm font-medium mb-2"
-              >
-                Enter Your Name
-              </label>
-              <input
-                type="text"
-                id="userName"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value.trim())}
-                placeholder="Your name"
-                className="w-full px-4 py-2 mb-4 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <input
-                type="text"
-                value={joinMeetingId}
-                onChange={(e) => setJoinMeetingId(e.target.value.trim())}
-                placeholder="Enter Meeting ID"
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            <div className="space-y-4">
-              <button
-                onClick={createMeeting}
-                disabled={!userName || isCreatingMeeting}
-                className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg text-white font-medium transition-colors duration-200 flex items-center justify-center space-x-2"
-              >
-                {isCreatingMeeting ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                ) : (
-                  <>
-                    <User className="w-5 h-5" />
-                    <span>Create New Meeting</span>
-                  </>
-                )}
-              </button>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-gray-800 text-gray-400">Or</span>
-              </div>
-              <button
-                onClick={joinMeeting}
-                disabled={!userName || !joinMeetingId || isJoiningMeeting}
-                className="w-full px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg text-white font-medium transition-colors duration-200 flex items-center justify-center space-x-2"
-              >
-                {isJoiningMeeting ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
-                ) : (
-                  "Join Meeting"
-                )}
-              </button>
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-600"></div>
-                </div>
-              </div>
-            </div>
+          <div className="bg-gray-800 p-8 rounded-lg shadow-xl max-w-md w-full">
+            {renderContent()}
           </div>
         </div>
+        <Toaster position="top-center" />
       </div>
     );
   }
@@ -233,6 +325,9 @@ function App() {
         webcamEnabled: true,
         name: userName,
         debugMode: true,
+        metaData: {
+          preferredLanguage: selectedLanguage,
+        },
       }}
       token={token}
       joinWithoutUserInteraction
