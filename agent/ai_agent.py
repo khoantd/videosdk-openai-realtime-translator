@@ -153,8 +153,13 @@ class AIAgent:
                 audio_mono = librosa.to_mono(audio_data_float.T)
                 audio_resampled = librosa.resample(
                     audio_mono, 
+<<<<<<< HEAD
                     orig_sr=48000, 
                     target_sr=24000
+=======
+                    orig_sr=48000,
+                    target_sr=16000
+>>>>>>> 4389be8 (++target_sr=24000)
                 )
                 
                 # Convert to PCM16 bytes
