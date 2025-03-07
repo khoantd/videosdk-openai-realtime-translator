@@ -149,12 +149,12 @@ class AIAgent:
                 audio_data_float = (audio_data.astype(np.float32) / 
                                   np.iinfo(np.int16).max)
                 
-                # Convert to mono and resample to 16kHz for OpenAI
+                # Convert to mono and resample to 24kHz for OpenAI
                 audio_mono = librosa.to_mono(audio_data_float.T)
                 audio_resampled = librosa.resample(
                     audio_mono, 
                     orig_sr=48000, 
-                    target_sr=16000
+                    target_sr=24000
                 )
                 
                 # Convert to PCM16 bytes
