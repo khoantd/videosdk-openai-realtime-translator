@@ -1,5 +1,6 @@
 import base64
-from typing import Dict, List, Union, Callable, Optional
+import traceback
+from typing import Dict, List, Union, Callable
 from utils.struct.openai import (
     AudioFormats,
     ClientToServerMessage,
@@ -11,6 +12,7 @@ from utils.struct.openai import (
     SessionUpdate,
     SessionUpdateParams,
     Voices,
+    parse_server_message,
     generate_event_id,
     to_json,
 )
@@ -26,28 +28,32 @@ class OpenAIIntelligence:
     def __init__(
         self, 
         loop: AbstractEventLoop, 
-        api_key: str,
+        api_key,
         model: str = "gpt-4o-realtime-preview-2024-10-01",
-        instructions: str = "",
+        instructions="""\
+            Actively listen to the user's questions and provide concise, relevant responses. 
+            Acknowledge the user's intent before answering. Keep responses under 2 sentences.\
+        """,
         base_url: str = "api.openai.com",
         voice: Voices = Voices.Alloy,
-        temperature: float = 0.7,
+        temperature: float = 0.8,
         tools: List[Dict[str, Union[str, any]]] = [],
         input_audio_transcription: InputAudioTranscription = InputAudioTranscription(
             model="whisper-1"
         ),
         clear_audio_queue: Callable[[], None] = lambda: None,
         handle_function_call: Callable[[ResponseFunctionCallArgumentsDone], None] = lambda x: None,
-        modalities: List[str] = ["text", "audio"],
-        max_response_output_tokens: int = 512,
+        modalities=["text", "audio"],
+        max_response_output_tokens=512,
         turn_detection: ServerVADUpdateParams = ServerVADUpdateParams(
             type="server_vad",
             threshold=0.5,
             prefix_padding_ms=300,
             silence_duration_ms=200,
         ),
-        audio_track: Optional[CustomAudioStreamTrack] = None,
-    ):
+        audio_track: CustomAudioStreamTrack = None,
+    
+        ):
         self.model = model
         self.loop = loop
         self.api_key = api_key
@@ -62,13 +68,8 @@ class OpenAIIntelligence:
         self.clear_audio_queue = clear_audio_queue
         self.handle_function_call = handle_function_call
         self.turn_detection = turn_detection
-        self.ws: Optional[aiohttp.ClientWebSocketResponse] = None
+        self.ws = None
         self.audio_track = audio_track
-        self.receive_message_task: Optional[asyncio.Task] = None
-        self._is_connected = False
-        self._reconnect_attempts = 0
-        self._max_reconnect_attempts = 5
-        self._reconnect_delay = 1  # Initial delay in seconds
         
         self._http_session = aiohttp.ClientSession(loop=self.loop)
         self.session_update_params = SessionUpdateParams(
@@ -87,192 +88,99 @@ class OpenAIIntelligence:
         )
 
     async def connect(self):
-        if self._is_connected and self.ws and not self.ws.closed:
-            return
+        # url = f"wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17"
+        url = f"wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview"
+        logger.info("Establishing OpenAI WS connection... ")
+        self.ws = await self._http_session.ws_connect(
+            url=url,
+            headers={
+                "Authorization": f"Bearer {self.api_key}",
+                "OpenAI-Beta": "realtime=v1",
+            },
+        )
+        logger.info("OpenAI WS connection established")
+        self.receive_message_task = self.loop.create_task(
+            self.receive_message_handler()
+        )
 
-        try:
-            if self._reconnect_attempts >= self._max_reconnect_attempts:
-                logger.error("Max reconnection attempts reached")
-                return
+        print("List of tools", self.tools)
 
-            url = f"wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview"
-            logger.info(f"Establishing OpenAI WS connection (attempt {self._reconnect_attempts + 1})...")
-            
-            self.ws = await self._http_session.ws_connect(
-                url=url,
-                headers={
-                    "Authorization": f"Bearer {self.api_key}",
-                    "OpenAI-Beta": "realtime=v1",
-                },
-                heartbeat=30.0,
-                max_msg_size=0  # No limit on message size
-            )
-            
-            logger.info("OpenAI WS connection established")
-            self._is_connected = True
-            self._reconnect_attempts = 0  # Reset counter on successful connection
-            self._reconnect_delay = 1  # Reset delay
-            
-            # Start message handler
-            if self.receive_message_task:
-                self.receive_message_task.cancel()
-            self.receive_message_task = self.loop.create_task(
-                self.receive_message_handler()
-            )
+        await self.update_session(self.session_update_params)
 
-            await self.update_session(self.session_update_params)
-
-        except Exception as e:
-            logger.error(f"Failed to connect to OpenAI: {e}")
-            self._is_connected = False
-            if self.ws:
-                await self.ws.close()
-            self.ws = None
-            
-            self._reconnect_attempts += 1
-            await asyncio.sleep(self._reconnect_delay)
-            self._reconnect_delay = min(self._reconnect_delay * 2, 30)  # Exponential backoff, max 30 seconds
-            
-            if self._reconnect_attempts < self._max_reconnect_attempts:
-                logger.info(f"Attempting to reconnect in {self._reconnect_delay} seconds...")
-                await self.connect()
-            raise
+        await self.receive_message_task
 
     async def update_session(self, session: SessionUpdateParams):
-        if not self.ws or self.ws.closed:
-            await self.connect()
-        try:
-            await self.send_request(
-                SessionUpdate(
-                    event_id=generate_event_id(),
-                    session=session,
-                )
+        print("Updating session", session.tools)
+        await self.send_request(
+            SessionUpdate(
+                event_id=generate_event_id(),
+                session=session,
             )
-        except Exception as e:
-            logger.error(f"Failed to update session: {e}")
-            self._is_connected = False
-            await self.connect()
+        )
+        
     
     async def send_request(self, request: ClientToServerMessage):
-        if not self.ws or self.ws.closed:
-            await self.connect()
-        try:
-            request_json = to_json(request)
-            await self.ws.send_str(request_json)
-        except Exception as e:
-            logger.error(f"Error sending request: {e}")
-            self._is_connected = False
-            await self.connect()
-            
+        request_json = to_json(request)
+        await self.ws.send_str(request_json)
+        
     async def send_audio_data(self, audio_data: bytes):
-        """Send PCM16 16kHz mono audio data to OpenAI"""
-        if not self.ws or self.ws.closed:
-            await self.connect()
-        try:
-            base64_audio_data = base64.b64encode(audio_data).decode("utf-8")
-            message = InputAudioBufferAppend(audio=base64_audio_data)
-            await self.send_request(message)
-        except Exception as e:
-            logger.error(f"Error sending audio data: {e}")
-            self._is_connected = False
-            await self.connect()
+        """audio_data is assumed to be pcm16 24kHz mono little-endian"""
+        base64_audio_data = base64.b64encode(audio_data).decode("utf-8")
+        message = InputAudioBufferAppend(audio=base64_audio_data)
+        await self.send_request(message)
 
     async def receive_message_handler(self):
         while True:
-            try:
-                if not self.ws:
-                    await asyncio.sleep(1)
-                    continue
-
-                async for response in self.ws:
-                    if response.type == aiohttp.WSMsgType.TEXT:
-                        await self.handle_response(response.data)
-                    elif response.type == aiohttp.WSMsgType.ERROR:
-                        logger.error(f"WebSocket error: {response}")
-                        self._is_connected = False
-                        await self.connect()
-                        break
-                    elif response.type == aiohttp.WSMsgType.CLOSED:
-                        logger.info("WebSocket connection closed")
-                        self._is_connected = False
-                        await self.connect()
-                        break
-                    
+            async for response in self.ws:
+                try:
                     await asyncio.sleep(0.01)
+                    if response.type == aiohttp.WSMsgType.TEXT:
+                        # print("Received message", response)
+                        self.handle_response(response.data)
+                    elif response.type == aiohttp.WSMsgType.ERROR:
+                        logger.error("Error while receiving data from openai", response)
+                except Exception as e:
+                    traceback.print_exc()
+                    print("Error in receiving message:", e)
 
-            except asyncio.CancelledError:
-                logger.info("Message handler cancelled")
-                break
-            except Exception as e:
-                logger.error(f"Error in message handler: {e}")
-                self._is_connected = False
-                await asyncio.sleep(1)
-                await self.connect()
-
-    async def close(self):
-        """Properly close the WebSocket connection"""
-        self._is_connected = False
-        if self.receive_message_task:
-            self.receive_message_task.cancel()
-            try:
-                await self.receive_message_task
-            except asyncio.CancelledError:
-                pass
-        
-        if self.ws:
-            await self.ws.close()
-        
-        if self._http_session:
-            await self._http_session.close()
+    def clear_audio_queue(self):
+        pass
                 
     def on_audio_response(self, audio_bytes: bytes):
-        """Handle translated audio response from OpenAI"""
-        if self.audio_track:
-            self.loop.create_task(
-                self.audio_track.add_new_bytes(iter([audio_bytes]))
-            )
+        self.loop.create_task(
+            self.audio_track.add_new_bytes(iter([audio_bytes]))
+        )
         
-    async def handle_response(self, message: str):
-        try:
-            message_data = json.loads(message)
+    def handle_response(self, message: str):
+        message = json.loads(message)
 
-            match message_data["type"]:
-                case EventType.SESSION_CREATED:
-                    logger.info("Session created successfully")
-                    
-                case EventType.SESSION_UPDATE:
-                    logger.info("Session updated successfully")
-
-                case EventType.RESPONSE_AUDIO_DELTA:
-                    self.on_audio_response(base64.b64decode(message_data["delta"]))
-                    
-                case EventType.RESPONSE_AUDIO_TRANSCRIPT_DONE:
-                    logger.info(f"Response Transcription: {message_data.get('transcript', '')}")
-                
-                case EventType.ITEM_INPUT_AUDIO_TRANSCRIPTION_COMPLETED:
-                    logger.info(f"Client Transcription: {message_data.get('transcript', '')}")
-                
-                case EventType.INPUT_AUDIO_BUFFER_SPEECH_STARTED:
-                    logger.info("Speech started, clearing audio queue")
-                    self.clear_audio_queue()
-                    
-                case EventType.RESPONSE_FUNCTION_CALL_ARGUMENTS_DONE:
-                    if self.handle_function_call:
-                        await self.loop.run_in_executor(
-                            None, 
-                            self.handle_function_call, 
-                            message_data
-                        )
+        match message["type"]:
             
-                case EventType.ERROR:
-                    error_msg = message_data.get('error', {})
-                    if isinstance(error_msg, dict):
-                        error_str = json.dumps(error_msg)
-                    else:
-                        error_str = str(error_msg)
-                    logger.error(f"Server Error: {error_str}")
-                    
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse message: {e}")
-        except Exception as e:
-            logger.error(f"Error handling response: {e}")
+            case EventType.SESSION_CREATED:
+                logger.info(f"Server Message: {message["type"]}")
+                # print("Session Created", message["session"])
+                
+            case EventType.SESSION_UPDATE:
+                logger.info(f"Server Message: {message["type"]}")
+                # print("Session Updated", message["session"])
+
+            case EventType.RESPONSE_AUDIO_DELTA:
+                logger.info(f"Server Message: {message["type"]}")
+                self.on_audio_response(base64.b64decode(message["delta"]))
+                
+            case EventType.RESPONSE_AUDIO_TRANSCRIPT_DONE:
+                logger.info(f"Server Message: {message["type"]}")
+                print(f"Response Transcription: {message["transcript"]}")
+            
+            case EventType.ITEM_INPUT_AUDIO_TRANSCRIPTION_COMPLETED:
+                logger.info(f"Server Message: {message["type"]}")
+                print(f"Client Transcription: {message["transcript"]}")
+            
+            case EventType.INPUT_AUDIO_BUFFER_SPEECH_STARTED:
+                logger.info(f"Server Message: {message["type"]}")
+                logger.info("Clearing audio queue")
+                self.clear_audio_queue()
+
+        
+            case EventType.ERROR:
+                logger.error(f"Server Error Message: ", message["error"])

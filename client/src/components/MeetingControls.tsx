@@ -1,14 +1,5 @@
 import { useMeeting } from "@videosdk.live/react-sdk";
-import {
-  PhoneOff,
-  UserPlus,
-  Video,
-  VideoOff,
-  Mic,
-  MicOff,
-  Copy,
-  Check,
-} from "lucide-react";
+import { PhoneOff, UserPlus, Copy, Check } from "lucide-react";
 import useMeetingStore from "../store/meetingStore";
 import toast from "react-hot-toast";
 import React from "react";
@@ -18,8 +9,7 @@ interface MeetingControlsProps {
 }
 
 const MeetingControls = ({ setMeetingId }: MeetingControlsProps) => {
-  const { end, meetingId, toggleMic, toggleWebcam, localMicOn, localWebcamOn } =
-    useMeeting();
+  const { end, meetingId } = useMeeting();
   const { token, aiJoined, setAiJoined } = useMeetingStore();
   const [isCopied, setIsCopied] = React.useState(false);
 
@@ -51,11 +41,11 @@ const MeetingControls = ({ setMeetingId }: MeetingControlsProps) => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
-      <div className="flex items-center justify-center space-x-4">
+    <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 to-transparent">
+      <div className="max-w-md mx-auto flex items-center justify-center space-x-4">
         <button
           onClick={copyMeetingId}
-          className="p-3 rounded-full bg-gray-700 hover:bg-gray-600"
+          className="p-4 rounded-full bg-gray-700 hover:bg-gray-600 transition-colors"
           title="Copy Meeting ID"
         >
           {isCopied ? (
@@ -65,40 +55,10 @@ const MeetingControls = ({ setMeetingId }: MeetingControlsProps) => {
           )}
         </button>
 
-        <button
-          onClick={() => toggleMic()}
-          className={`p-3 rounded-full ${
-            localMicOn
-              ? "bg-gray-700 hover:bg-gray-600"
-              : "bg-red-500 hover:bg-red-600"
-          }`}
-        >
-          {localMicOn ? (
-            <Mic className="w-6 h-6 text-white" />
-          ) : (
-            <MicOff className="w-6 h-6 text-white" />
-          )}
-        </button>
-
-        <button
-          onClick={() => toggleWebcam()}
-          className={`p-3 rounded-full ${
-            localWebcamOn
-              ? "bg-gray-700 hover:bg-gray-600"
-              : "bg-red-500 hover:bg-red-600"
-          }`}
-        >
-          {localWebcamOn ? (
-            <Video className="w-6 h-6 text-white" />
-          ) : (
-            <VideoOff className="w-6 h-6 text-white" />
-          )}
-        </button>
-
         {!aiJoined && (
           <button
             onClick={inviteAI}
-            className="p-3 bg-blue-600 rounded-full hover:bg-blue-700 transition-colors"
+            className="p-4 bg-blue-600 rounded-full hover:bg-blue-700 transition-colors"
             title="Invite AI Translator"
           >
             <UserPlus className="w-6 h-6 text-white" />
@@ -110,7 +70,7 @@ const MeetingControls = ({ setMeetingId }: MeetingControlsProps) => {
             end();
             setMeetingId(null);
           }}
-          className="p-3 rounded-full bg-red-500 hover:bg-red-600"
+          className="p-4 rounded-full bg-red-500 hover:bg-red-600 transition-colors"
         >
           <PhoneOff className="w-6 h-6 text-white transform rotate-225" />
         </button>

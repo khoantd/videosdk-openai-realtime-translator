@@ -4,11 +4,9 @@ import { Toaster } from "react-hot-toast";
 import { Languages, UserPlus, Users, Globe2 } from "lucide-react";
 import useMeetingStore from "./store/meetingStore";
 import ParticipantCard from "./components/ParticipantCard";
-import TranslationPanel from "./components/TranslationPanel";
 import MeetingControls from "./components/MeetingControls";
 import toast from "react-hot-toast";
 
-// Common languages that people might want to use
 const LANGUAGES = [
   { code: "en", name: "English" },
   { code: "es", name: "Spanish" },
@@ -30,7 +28,7 @@ interface MeetingViewProps {
 
 const MeetingView = ({ setMeetingId }: MeetingViewProps) => {
   const { participants } = useMeeting();
-  const { aiJoined } = useMeetingStore();
+  const { aiJoined: _aiJoined } = useMeetingStore();
 
   const isAIParticipant = (participantId: string) => {
     const participant = participants.get(participantId);
@@ -38,32 +36,46 @@ const MeetingView = ({ setMeetingId }: MeetingViewProps) => {
     return displayName.includes("ai") || displayName.includes("bot");
   };
 
+  // Separate participants into AI and human
+  const participantsList = [...participants.keys()];
+  const aiParticipant = participantsList.find((id) => isAIParticipant(id));
+  const humanParticipants = participantsList.filter(
+    (id) => !isAIParticipant(id)
+  );
+
   return (
-    <div
-      className="min-h-screen w-full bg-cover bg-center"
-      style={{
-        backgroundImage: `linear-gradient(rgba(225, 225, 225, 0.2), rgba(225, 225, 225, 0.2)), url('https://images.unsplash.com/photo-1628544106915-0d756c7dadfa?q=80&w=2832&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`,
-      }}
-    >
+    <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 to-black">
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[...participants.keys()].map((participantId) => (
-                <ParticipantCard
-                  key={participantId}
-                  participantId={participantId}
-                  isAI={aiJoined && isAIParticipant(participantId)}
-                />
-              ))}
+        <div className="flex flex-col gap-8">
+          {/* AI Participant Section */}
+          {aiParticipant && (
+            <div className="w-full max-w-3xl mx-auto">
+              <h2 className="text-white text-xl font-semibold mb-4 flex items-center gap-2">
+                <Languages className="w-6 h-6 text-blue-400" />
+                AI Translator
+              </h2>
+              <ParticipantCard
+                participantId={aiParticipant}
+                isAI={true}
+                size="large"
+              />
             </div>
-          </div>
-          <div className="lg:col-span-1">
-            <TranslationPanel />
+          )}
+
+          {/* Human Participants Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {humanParticipants.map((participantId) => (
+              <ParticipantCard
+                key={participantId}
+                participantId={participantId}
+                isAI={false}
+                size="normal"
+              />
+            ))}
           </div>
         </div>
-        <MeetingControls setMeetingId={setMeetingId} />
       </div>
+      <MeetingControls setMeetingId={setMeetingId} />
       <Toaster position="top-center" />
     </div>
   );
@@ -82,6 +94,22 @@ function App() {
   const [mode, setMode] = React.useState<"select" | "create" | "join">(
     "select"
   );
+  const [_hasPermissions, setHasPermissions] = React.useState(false);
+
+  // Request permissions before joining
+  const requestPermissions = async () => {
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+      setHasPermissions(true);
+      return true;
+    } catch (err) {
+      console.error("Error getting permissions:", err);
+      toast.error(
+        "Please allow camera and microphone access to join the meeting"
+      );
+      return false;
+    }
+  };
 
   const validateMeetingId = async (roomId: string) => {
     try {
@@ -107,6 +135,9 @@ function App() {
       toast.error("Please enter your name");
       return;
     }
+
+    const permissionsGranted = await requestPermissions();
+    if (!permissionsGranted) return;
 
     setIsCreatingMeeting(true);
     try {
@@ -143,6 +174,9 @@ function App() {
       return;
     }
 
+    const permissionsGranted = await requestPermissions();
+    if (!permissionsGranted) return;
+
     setIsJoiningMeeting(true);
     try {
       const isValid = await validateMeetingId(joinMeetingId);
@@ -166,17 +200,19 @@ function App() {
         <div className="space-y-6">
           <button
             onClick={() => setMode("create")}
-            className="w-full px-6 py-4 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-colors duration-200 flex items-center justify-center space-x-3"
+            className="w-full px-6 py-4 bg-blue-600 hover:bg-blue-700 rounded-xl text-white font-medium transition-all duration-200 flex items-center justify-center space-x-3 hover:scale-[1.02]"
           >
             <UserPlus className="w-6 h-6" />
             <span>Create New Meeting</span>
           </button>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-gray-800 text-gray-400">Or</span>
+          <div className="relative flex items-center gap-4">
+            <div className="flex-1 h-px bg-gray-700" />
+            <span className="text-gray-400 text-sm font-medium">Or</span>
+            <div className="flex-1 h-px bg-gray-700" />
           </div>
           <button
             onClick={() => setMode("join")}
-            className="w-full px-6 py-4 bg-green-600 hover:bg-green-700 rounded-lg text-white font-medium transition-colors duration-200 flex items-center justify-center space-x-3"
+            className="w-full px-6 py-4 bg-green-600 hover:bg-green-700 rounded-xl text-white font-medium transition-all duration-200 flex items-center justify-center space-x-3 hover:scale-[1.02]"
           >
             <Users className="w-6 h-6" />
             <span>Join Existing Meeting</span>
@@ -200,7 +236,7 @@ function App() {
             value={userName}
             onChange={(e) => setUserName(e.target.value.trim())}
             placeholder="Your name"
-            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
           />
         </div>
 
@@ -216,7 +252,7 @@ function App() {
             id="language"
             value={selectedLanguage}
             onChange={(e) => setSelectedLanguage(e.target.value)}
-            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
           >
             {LANGUAGES.map((lang) => (
               <option key={lang.code} value={lang.code}>
@@ -240,7 +276,7 @@ function App() {
               value={joinMeetingId}
               onChange={(e) => setJoinMeetingId(e.target.value.trim())}
               placeholder="Enter Meeting ID"
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
             />
           </div>
         )}
@@ -250,7 +286,7 @@ function App() {
             <button
               onClick={createMeeting}
               disabled={!userName || isCreatingMeeting}
-              className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg text-white font-medium transition-colors duration-200 flex items-center justify-center space-x-2"
+              className="w-full px-6 py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-xl text-white font-medium transition-all duration-200 flex items-center justify-center space-x-2 hover:scale-[1.02]"
             >
               {isCreatingMeeting ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
@@ -265,7 +301,7 @@ function App() {
             <button
               onClick={joinMeeting}
               disabled={!userName || !joinMeetingId || isJoiningMeeting}
-              className="w-full px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg text-white font-medium transition-colors duration-200 flex items-center justify-center space-x-2"
+              className="w-full px-6 py-4 bg-green-600 hover:bg-green-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-xl text-white font-medium transition-all duration-200 flex items-center justify-center space-x-2 hover:scale-[1.02]"
             >
               {isJoiningMeeting ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
@@ -280,7 +316,7 @@ function App() {
 
           <button
             onClick={() => setMode("select")}
-            className="w-full px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-medium transition-colors duration-200"
+            className="w-full px-6 py-4 bg-gray-800/50 hover:bg-gray-700 rounded-xl text-white font-medium transition-all duration-200 hover:scale-[1.02]"
           >
             Back
           </button>
@@ -291,24 +327,17 @@ function App() {
 
   if (!meetingId) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div
-          className="fixed inset-0 bg-cover bg-center bg-no-repeat opacity-75"
-          style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1628544106915-0d756c7dadfa?q=80&w=2832&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
-          }}
-        />
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black flex items-center justify-center p-4">
         <div className="relative z-10 flex flex-col items-center text-center">
           <h1 className="text-4xl font-bold text-white mb-6 flex items-center gap-3">
-            <Languages className="w-10 h-10" />
+            <Languages className="w-10 h-10 text-blue-400" />
             Real-Time Translator Meeting
           </h1>
           <p className="text-gray-300 mb-8 max-w-md">
             Connect with others and break language barriers with our real-time
             translation feature.
           </p>
-          <div className="bg-gray-800 p-8 rounded-lg shadow-xl max-w-md w-full">
+          <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-2xl shadow-xl max-w-md w-full border border-gray-700/50">
             {renderContent()}
           </div>
         </div>
@@ -321,7 +350,7 @@ function App() {
     <MeetingProvider
       config={{
         meetingId,
-        micEnabled: true,
+        micEnabled: false,
         webcamEnabled: true,
         name: userName,
         debugMode: true,
