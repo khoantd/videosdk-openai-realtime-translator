@@ -12,7 +12,6 @@ from utils.struct.openai import (
     SessionUpdate,
     SessionUpdateParams,
     Voices,
-    parse_server_message,
     generate_event_id,
     to_json,
 )
@@ -86,6 +85,8 @@ class OpenAIIntelligence:
             max_response_output_tokens=self.max_response_output_tokens,
             input_audio_transcription=self.input_audio_transcription,
         )
+        self.connected_event = asyncio.Event()   # used to notify when ws is ready
+
 
     async def connect(self):
         # url = f"wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17"
@@ -98,6 +99,7 @@ class OpenAIIntelligence:
                 "OpenAI-Beta": "realtime=v1",
             },
         )
+        self.connected_event = asyncio.Event()   # used to notify when ws is ready
         logger.info("OpenAI WS connection established")
         self.receive_message_task = self.loop.create_task(
             self.receive_message_handler()
@@ -108,6 +110,14 @@ class OpenAIIntelligence:
         await self.update_session(self.session_update_params)
 
         await self.receive_message_task
+        
+    async def update_session_instructions(self, new_instructions: str):
+        """
+        Dynamically update the system instructions (the system prompt) 
+        for translation into the target language.
+        """
+        self.session_update_params.instructions = new_instructions
+        await self.update_session(self.session_update_params)
 
     async def update_session(self, session: SessionUpdateParams):
         print("Updating session", session.tools)

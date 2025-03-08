@@ -47,6 +47,8 @@ class AIAgent:
             input_audio_transcription=InputAudioTranscription(model="whisper-1"),
             audio_track=self.audio_track
         )
+        
+        self.participants_data = {}
 
     
     async def add_audio_listener(self, stream: Stream):
@@ -88,8 +90,39 @@ class AIAgent:
         print(f"Meeting Left")
         
     def on_participant_joined(self, participant: Participant):
-        print("Participant joined:", participant.display_name)
+        peer_name = participant.display_name
+        native_lang = participant.meta_data["preferredLanguage"]
+        self.participants_data[participant.id] = {
+            "name": peer_name,
+            "lang": native_lang
+        }
+        print("Participant joined:", peer_name)
+        print("Native language :", native_lang)
         
+        if len(self.participants_data) == 2:
+            # Extract the info for each participant
+            participant_ids = list(self.participants_data.keys())
+            p1 = self.participants_data[participant_ids[0]]
+            p2 = self.participants_data[participant_ids[1]]
+
+            # Build translator-specific instructions
+            # Explanation:
+            #  - The model should detect which participant is speaking by the incoming audio.
+            #  - Then it should respond ONLY in the other participant's language with a translation, no extra commentary.
+            translator_instructions = f"""
+                You are a real-time translator bridging a conversation between:
+                - {p1['name']} (speaking {p1['lang']})
+                - {p2['name']} (speaking {p2['lang']})
+
+                Whenever you receive audio from one participant, you must translate
+                it into the other participant's language. Provide only the translation,
+                with no extra text or meta-commentary. If the audio is from {p1['lang']},
+                respond in {p2['lang']}, and vice versa.
+            """
+
+            # Dynamically tell OpenAI to use these instructions
+            asyncio.create_task(self.intelligence.update_session_instructions(translator_instructions))
+
         def on_stream_enabled(stream: Stream):
             print("Participant stream enabled")
             self.current_participant = participant

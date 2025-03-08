@@ -86,7 +86,7 @@ function App() {
   const [meetingId, setMeetingId] = React.useState<string | null>(null);
   const [userName, setUserName] = React.useState("");
   const [selectedLanguage, setSelectedLanguage] = React.useState(
-    LANGUAGES[0].code
+    LANGUAGES[0].name
   );
   const [isCreatingMeeting, setIsCreatingMeeting] = React.useState(false);
   const [isJoiningMeeting, setIsJoiningMeeting] = React.useState(false);
@@ -255,7 +255,7 @@ function App() {
             className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
           >
             {LANGUAGES.map((lang) => (
-              <option key={lang.code} value={lang.code}>
+              <option key={lang.name} value={lang.name}>
                 {lang.name}
               </option>
             ))}
