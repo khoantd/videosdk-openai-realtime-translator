@@ -1,6 +1,6 @@
 import base64
 import traceback
-from typing import Dict, List, Union, Callable
+from typing import Dict, List, Union, Callable, Optional
 from utils.struct.openai import (
     AudioFormats,
     ClientToServerMessage,
@@ -85,8 +85,8 @@ class OpenAIIntelligence:
             max_response_output_tokens=self.max_response_output_tokens,
             input_audio_transcription=self.input_audio_transcription,
         )
-        self.connected_event = asyncio.Event()   # used to notify when ws is ready
-
+        # self.connected_event = asyncio.Event()   # used to notify when ws is ready
+        self.pending_instructions: Optional[str] = None
 
     async def connect(self):
         # url = f"wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17"
@@ -99,7 +99,12 @@ class OpenAIIntelligence:
                 "OpenAI-Beta": "realtime=v1",
             },
         )
-        self.connected_event = asyncio.Event()   # used to notify when ws is ready
+        
+        if self.pending_instructions is not None:
+            await self.update_session_instructions(self.pending_instructions)
+
+
+        # self.connected_event = asyncio.Event()   # used to notify when ws is ready
         logger.info("OpenAI WS connection established")
         self.receive_message_task = self.loop.create_task(
             self.receive_message_handler()
@@ -116,6 +121,10 @@ class OpenAIIntelligence:
         Dynamically update the system instructions (the system prompt) 
         for translation into the target language.
         """
+        if self.ws is None:
+            self.pending_instructions = new_instructions
+            return
+        
         self.session_update_params.instructions = new_instructions
         await self.update_session(self.session_update_params)
 

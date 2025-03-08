@@ -1,6 +1,6 @@
 import React from "react";
 import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
-import { Bot, User } from "lucide-react";
+import { Bot, User, Mic, MicOff } from "lucide-react";
 import clsx from "clsx";
 
 interface ParticipantCardProps {
@@ -28,6 +28,7 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
     displayName,
   } = useParticipant(participantId);
   const { muteMic, unmuteMic } = useMeeting();
+
   // Handle push-to-talk
   React.useEffect(() => {
     if (!isLocal || isAI) return;
@@ -103,19 +104,42 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
   }, [micStream, micOn]);
 
   const showAIAnimation = isAI && isActiveSpeaker;
+  const isParticipantSpeaking = isActiveSpeaker || isSpeaking;
 
   return (
     <div
       className={clsx(
-        "relative rounded-xl overflow-hidden bg-gray-800/50 backdrop-blur-sm",
+        "relative rounded-xl overflow-hidden bg-gray-800/50 backdrop-blur-sm group",
         size === "large" ? "aspect-[16/9]" : "aspect-video",
-        (isActiveSpeaker || isSpeaking) && "ring-2",
+        isParticipantSpeaking && "ring-2",
         isAI ? "ring-blue-500" : "ring-green-500",
         size === "large" && "shadow-2xl"
       )}
       data-ai-participant={isAI}
       data-is-speaking={isActiveSpeaker}
     >
+      {/* Speaking Status Indicator */}
+      <div
+        className={clsx(
+          "absolute top-4 left-4 z-20 transition-all duration-300",
+          "flex items-center gap-2 px-3 py-1.5 rounded-full",
+          isParticipantSpeaking
+            ? isAI
+              ? "bg-blue-500/90"
+              : "bg-green-500/90"
+            : "bg-gray-800/90 opacity-0 group-hover:opacity-100"
+        )}
+      >
+        {isParticipantSpeaking ? (
+          <Mic className="w-4 h-4 text-white animate-pulse" />
+        ) : (
+          <MicOff className="w-4 h-4 text-gray-300" />
+        )}
+        <span className="text-white text-sm font-medium">
+          {isParticipantSpeaking ? "Speaking" : "Not Speaking"}
+        </span>
+      </div>
+
       <div className="absolute inset-0">
         {webcamOn && webcamStream ? (
           <video
