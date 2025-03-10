@@ -111,13 +111,15 @@ class AIAgent:
             #  - Then it should respond ONLY in the other participant's language with a translation, no extra commentary.
             translator_instructions = f"""
                 You are a real-time translator bridging a conversation between:
-                - {p1['name']} (speaking {p1['lang']})
-                - {p2['name']} (speaking {p2['lang']})
+                - {p1['name']} (speaks {p1['lang']})
+                - {p2['name']} (speaks {p2['lang']})
 
-                Whenever you receive audio from one participant, you must translate
-                it into the other participant's language. Provide only the translation,
-                with no extra text or meta-commentary. If the audio is from {p1['lang']},
-                respond in {p2['lang']}, and vice versa.
+                You have to listen and speak those exactly word in different language
+                eg. when {p1['lang']} is spoken then say that exact in language {p2['lang']}
+                similar when {p2['lang']} is spoken then say that exact in language {p1['lang']}
+                Keep in account who speaks what and use 
+                NOTE - 
+                Your job is to translate, from one language to another, don't engage in any conversation
             """
 
             # Dynamically tell OpenAI to use these instructions
@@ -126,6 +128,7 @@ class AIAgent:
         def on_stream_enabled(stream: Stream):
             print("Participant stream enabled")
             self.current_participant = participant
+            print("Participant stream enabled for", self.current_participant.display_name)
             if stream.kind == "audio":
                 self.audio_listener_tasks[stream.id] = self.loop.create_task(
                     self.add_audio_listener(stream)
