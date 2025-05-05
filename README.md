@@ -2,6 +2,8 @@
 
 This project integrates VideoSDK, OpenAI Realtime APIs to create an AI Translator Agent. Below are the setup instructions.
 
+![openai realtime api - Speech to Speech Architecture](https://assets.videosdk.live/images/ai%20voice%20agent%20deepgram%20architecture.png)
+
 ### Start with the project
 
 ```sh
