@@ -5,3 +5,6 @@ numpy
 httpx
 librosa
 aiohttp
+pyee==9.1.1
+grpcio-tools
+python-dotenv

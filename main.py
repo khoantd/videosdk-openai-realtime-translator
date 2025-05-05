@@ -3,6 +3,9 @@ from fastapi import FastAPI, BackgroundTasks
 from pydantic import BaseModel
 from agent.ai_agent import AIAgent
 import asyncio
+from dotenv import load_dotenv
+
+load_dotenv()
 
 port = 8000
 app = FastAPI()
@@ -17,16 +20,18 @@ app.add_middleware(
 
 ai_agent = None
 
+
 class MeetingReqConfig(BaseModel):
     meeting_id: str
     token: str
-    
-async def server_operations(req:MeetingReqConfig):
+
+
+async def server_operations(req: MeetingReqConfig):
     # join ai agent
     # keep server alive
     global ai_agent
     ai_agent = AIAgent(req.meeting_id, req.token, "AI")
-    
+
     try:
         await ai_agent.join()
         while True:
@@ -36,7 +41,8 @@ async def server_operations(req:MeetingReqConfig):
         print(f"[ERROR]: either joining or running bg tasks: {ex}")
     finally:
         ai_agent.leave()
-    
+
+
 @app.get("/test")
 async def test():
     return {"message": "CORS is working!"}
@@ -48,7 +54,9 @@ async def join_player(req: MeetingReqConfig, bg_tasks: BackgroundTasks):
     bg_tasks.add_task(server_operations, req)
     return {"message": "AI agent joined"}
 
+
 # runnning the server on port : 8000
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run("main:app", host="127.0.0.1", port=8000)
