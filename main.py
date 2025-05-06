@@ -1,11 +1,10 @@
+from dotenv import load_dotenv
+load_dotenv()
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, BackgroundTasks
 from pydantic import BaseModel
 from agent.ai_agent import AIAgent
 import asyncio
-from dotenv import load_dotenv
-
-load_dotenv()
 
 port = 8000
 app = FastAPI()
