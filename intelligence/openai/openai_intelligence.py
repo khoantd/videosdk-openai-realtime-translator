@@ -23,10 +23,11 @@ import aiohttp
 import asyncio
 from agent.audio_stream_track import CustomAudioStreamTrack
 
+
 class OpenAIIntelligence:
     def __init__(
-        self, 
-        loop: AbstractEventLoop, 
+        self,
+        loop: AbstractEventLoop,
         api_key,
         model: str = "gpt-4o-realtime-preview-2024-10-01",
         instructions="""\
@@ -41,7 +42,9 @@ class OpenAIIntelligence:
             model="whisper-1"
         ),
         clear_audio_queue: Callable[[], None] = lambda: None,
-        handle_function_call: Callable[[ResponseFunctionCallArgumentsDone], None] = lambda x: None,
+        handle_function_call: Callable[
+            [ResponseFunctionCallArgumentsDone], None
+        ] = lambda x: None,
         modalities=["text", "audio"],
         max_response_output_tokens=512,
         turn_detection: ServerVADUpdateParams = ServerVADUpdateParams(
@@ -51,8 +54,7 @@ class OpenAIIntelligence:
             silence_duration_ms=200,
         ),
         audio_track: CustomAudioStreamTrack = None,
-    
-        ):
+    ):
         self.model = model
         self.loop = loop
         self.api_key = api_key
@@ -69,7 +71,7 @@ class OpenAIIntelligence:
         self.turn_detection = turn_detection
         self.ws = None
         self.audio_track = audio_track
-        
+
         self._http_session = aiohttp.ClientSession(loop=self.loop)
         self.session_update_params = SessionUpdateParams(
             model=self.model,
@@ -99,10 +101,9 @@ class OpenAIIntelligence:
                 "OpenAI-Beta": "realtime=v1",
             },
         )
-        
+
         if self.pending_instructions is not None:
             await self.update_session_instructions(self.pending_instructions)
-
 
         # self.connected_event = asyncio.Event()   # used to notify when ws is ready
         logger.info("OpenAI WS connection established")
@@ -115,16 +116,16 @@ class OpenAIIntelligence:
         await self.update_session(self.session_update_params)
 
         await self.receive_message_task
-        
+
     async def update_session_instructions(self, new_instructions: str):
         """
-        Dynamically update the system instructions (the system prompt) 
+        Dynamically update the system instructions (the system prompt)
         for translation into the target language.
         """
         if self.ws is None:
             self.pending_instructions = new_instructions
             return
-        
+
         self.session_update_params.instructions = new_instructions
         await self.update_session(self.session_update_params)
 
@@ -136,12 +137,11 @@ class OpenAIIntelligence:
                 session=session,
             )
         )
-        
-    
+
     async def send_request(self, request: ClientToServerMessage):
         request_json = to_json(request)
         await self.ws.send_str(request_json)
-        
+
     async def send_audio_data(self, audio_data: bytes):
         """audio_data is assumed to be pcm16 24kHz mono little-endian"""
         base64_audio_data = base64.b64encode(audio_data).decode("utf-8")
@@ -164,42 +164,40 @@ class OpenAIIntelligence:
 
     def clear_audio_queue(self):
         pass
-                
+
     def on_audio_response(self, audio_bytes: bytes):
-        self.loop.create_task(
-            self.audio_track.add_new_bytes(iter([audio_bytes]))
-        )
-        
+        self.loop.create_task(self.audio_track.add_new_bytes(iter([audio_bytes])))
+
     def handle_response(self, message: str):
         message = json.loads(message)
 
         match message["type"]:
-            
+
             case EventType.SESSION_CREATED:
-                logger.info(f"Server Message: {message["type"]}")
+                logger.info(f"Server Message: {message['type']}")
                 # print("Session Created", message["session"])
-                
+
             case EventType.SESSION_UPDATE:
-                logger.info(f"Server Message: {message["type"]}")
+                logger.info(f"Server Message: {message['type']}")
                 # print("Session Updated", message["session"])
 
             case EventType.RESPONSE_AUDIO_DELTA:
-                logger.info(f"Server Message: {message["type"]}")
+                logger.info(f"Server Message: {message['type']}")
                 self.on_audio_response(base64.b64decode(message["delta"]))
-                
+
             case EventType.RESPONSE_AUDIO_TRANSCRIPT_DONE:
-                logger.info(f"Server Message: {message["type"]}")
-                print(f"Response Transcription: {message["transcript"]}")
-            
+                logger.info(f"Server Message: {message['type']}")
+                print(f"Response Transcription: {message['transcript']}")
+
             case EventType.ITEM_INPUT_AUDIO_TRANSCRIPTION_COMPLETED:
-                logger.info(f"Server Message: {message["type"]}")
-                print(f"Client Transcription: {message["transcript"]}")
-            
+                logger.info(f"Server Message: {message['type']}")
+                print(f"Client Transcription: {message['transcript']}")
+
             case EventType.INPUT_AUDIO_BUFFER_SPEECH_STARTED:
-                logger.info(f"Server Message: {message["type"]}")
+                logger.info(f"Server Message: {message['type']}")
                 logger.info("Clearing audio queue")
                 self.clear_audio_queue()
 
-        
             case EventType.ERROR:
+                print(message)
                 logger.error(f"Server Error Message: ", message["error"])
