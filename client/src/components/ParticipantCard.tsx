@@ -3,6 +3,34 @@ import { useMeeting, useParticipant } from "@videosdk.live/react-sdk";
 import { Bot, User, Mic, MicOff } from "lucide-react";
 import clsx from "clsx";
 
+// Configure logging for ParticipantCard
+const log = (level: string, message: string, data?: any) => {
+  const timestamp = new Date().toISOString();
+  const logEntry = {
+    timestamp,
+    level,
+    message,
+    data,
+    component: 'ParticipantCard'
+  };
+  
+  // Log to console
+  console.log(`[${timestamp}] [${level}] ${message}`, data || '');
+  
+  // Store in localStorage for persistence
+  try {
+    const logs = JSON.parse(localStorage.getItem('frontend_logs') || '[]');
+    logs.push(logEntry);
+    // Keep only last 1000 logs
+    if (logs.length > 1000) {
+      logs.splice(0, logs.length - 1000);
+    }
+    localStorage.setItem('frontend_logs', JSON.stringify(logs));
+  } catch (e) {
+    console.error('Failed to store log:', e);
+  }
+};
+
 interface ParticipantCardProps {
   participantId: string;
   isAI?: boolean;
@@ -29,15 +57,29 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
   } = useParticipant(participantId);
   const { muteMic, unmuteMic } = useMeeting();
 
+  log('info', 'ParticipantCard rendered', { 
+    participantId, 
+    isAI, 
+    size, 
+    isLocal, 
+    displayName,
+    webcamOn,
+    micOn,
+    isActiveSpeaker
+  });
+
   // Handle push-to-talk
   React.useEffect(() => {
     if (!isLocal || isAI) return;
+
+    log('info', 'Setting up push-to-talk for local participant', { participantId });
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === "Space" && !isSpeaking) {
         e.preventDefault();
         setIsSpeaking(true);
         unmuteMic();
+        log('info', 'Push-to-talk activated (keyboard)', { participantId });
       }
     };
 
@@ -46,6 +88,7 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
         e.preventDefault();
         setIsSpeaking(false);
         muteMic();
+        log('info', 'Push-to-talk deactivated (keyboard)', { participantId });
       }
     };
 
@@ -55,8 +98,9 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
+      log('debug', 'Push-to-talk event listeners removed', { participantId });
     };
-  }, [isLocal, isAI, isSpeaking, unmuteMic, muteMic]);
+  }, [isLocal, isAI, isSpeaking, unmuteMic, muteMic, participantId]);
 
   // Auto-mute when AI starts speaking
   React.useEffect(() => {
@@ -68,40 +112,78 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
         if (ai.getAttribute("data-is-speaking") === "true") {
           muteMic();
           setIsSpeaking(false);
+          log('info', 'Auto-muted local participant due to AI speaking', { participantId });
         }
       });
     }
-  }, [isLocal, isAI, isActiveSpeaker, muteMic]);
+  }, [isLocal, isAI, isActiveSpeaker, muteMic, participantId]);
 
   // Handle webcam stream
   React.useEffect(() => {
     if (videoRef.current && webcamStream && webcamOn) {
-      const mediaStream = new MediaStream();
-      mediaStream.addTrack(webcamStream.track);
-      videoRef.current.srcObject = mediaStream;
-      videoRef.current.play().catch(console.error);
+      log('info', 'Setting up webcam stream', { participantId, isLocal });
+      
+      try {
+        const mediaStream = new MediaStream();
+        mediaStream.addTrack(webcamStream.track);
+        videoRef.current.srcObject = mediaStream;
+        videoRef.current.play().catch((error) => {
+          log('error', 'Failed to play webcam stream', { participantId, error });
+          console.error(error);
+        });
+      } catch (error) {
+        log('error', 'Failed to setup webcam stream', { participantId, error });
+      }
+    } else {
+      log('debug', 'Clearing webcam stream', { participantId, hasStream: !!webcamStream, webcamOn });
     }
+    
     return () => {
       if (videoRef.current) {
         videoRef.current.srcObject = null;
+        log('debug', 'Webcam stream cleaned up', { participantId });
       }
     };
-  }, [webcamStream, webcamOn]);
+  }, [webcamStream, webcamOn, participantId, isLocal]);
 
   // Handle audio stream
   React.useEffect(() => {
     if (audioRef.current && micStream && micOn) {
-      const mediaStream = new MediaStream();
-      mediaStream.addTrack(micStream.track);
-      audioRef.current.srcObject = mediaStream;
-      audioRef.current.play().catch(console.error);
+      log('info', 'Setting up audio stream', { participantId, isLocal });
+      
+      try {
+        const mediaStream = new MediaStream();
+        mediaStream.addTrack(micStream.track);
+        audioRef.current.srcObject = mediaStream;
+        audioRef.current.play().catch((error) => {
+          log('error', 'Failed to play audio stream', { participantId, error });
+          console.error(error);
+        });
+      } catch (error) {
+        log('error', 'Failed to setup audio stream', { participantId, error });
+      }
+    } else {
+      log('debug', 'Clearing audio stream', { participantId, hasStream: !!micStream, micOn });
     }
+    
     return () => {
       if (audioRef.current) {
         audioRef.current.srcObject = null;
+        log('debug', 'Audio stream cleaned up', { participantId });
       }
     };
-  }, [micStream, micOn]);
+  }, [micStream, micOn, participantId, isLocal]);
+
+  // Log speaking state changes
+  React.useEffect(() => {
+    const speakingState = isActiveSpeaker || isSpeaking;
+    log('debug', 'Speaking state changed', { 
+      participantId, 
+      isActiveSpeaker, 
+      isSpeaking, 
+      speakingState 
+    });
+  }, [isActiveSpeaker, isSpeaking, participantId]);
 
   const showAIAnimation = isAI && isActiveSpeaker;
   const isParticipantSpeaking = isActiveSpeaker || isSpeaking;
@@ -212,15 +294,18 @@ const ParticipantCard: React.FC<ParticipantCardProps> = ({
               onMouseDown={() => {
                 setIsSpeaking(true);
                 unmuteMic();
+                log('info', 'Push-to-talk activated (mouse)', { participantId });
               }}
               onMouseUp={() => {
                 setIsSpeaking(false);
                 muteMic();
+                log('info', 'Push-to-talk deactivated (mouse)', { participantId });
               }}
               onMouseLeave={() => {
                 if (isSpeaking) {
                   setIsSpeaking(false);
                   muteMic();
+                  log('info', 'Push-to-talk deactivated (mouse leave)', { participantId });
                 }
               }}
               className={clsx(

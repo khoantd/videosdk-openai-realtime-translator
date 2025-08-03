@@ -7,4 +7,25 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  build: {
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          videosdk: ['@videosdk.live/react-sdk'],
+          ui: ['lucide-react', 'react-hot-toast', 'clsx', 'tailwind-merge'],
+          state: ['zustand'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+  },
+  server: {
+    port: 5173,
+    host: true,
+  },
+  define: {
+    global: 'globalThis',
+  },
 });

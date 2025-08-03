@@ -7,6 +7,34 @@ import ParticipantCard from "./components/ParticipantCard";
 import MeetingControls from "./components/MeetingControls";
 import toast from "react-hot-toast";
 
+// Configure logging for frontend
+const log = (level: string, message: string, data?: any) => {
+  const timestamp = new Date().toISOString();
+  const logEntry = {
+    timestamp,
+    level,
+    message,
+    data,
+    component: 'App'
+  };
+  
+  // Log to console
+  console.log(`[${timestamp}] [${level}] ${message}`, data || '');
+  
+  // Store in localStorage for persistence
+  try {
+    const logs = JSON.parse(localStorage.getItem('frontend_logs') || '[]');
+    logs.push(logEntry);
+    // Keep only last 1000 logs
+    if (logs.length > 1000) {
+      logs.splice(0, logs.length - 1000);
+    }
+    localStorage.setItem('frontend_logs', JSON.stringify(logs));
+  } catch (e) {
+    console.error('Failed to store log:', e);
+  }
+};
+
 const LANGUAGES = [
   { code: "en", name: "English" },
   { code: "es", name: "Spanish" },
@@ -20,6 +48,7 @@ const LANGUAGES = [
   { code: "ko", name: "Korean" },
   { code: "hi", name: "Hindi" },
   { code: "ar", name: "Arabic" },
+  { code: "vn", name: "Vietnamese" },
 ];
 
 interface MeetingViewProps {
@@ -30,10 +59,14 @@ const MeetingView = ({ setMeetingId }: MeetingViewProps) => {
   const { participants } = useMeeting();
   const { aiJoined: _aiJoined } = useMeetingStore();
 
+  log('info', 'MeetingView rendered', { participantCount: participants.size });
+
   const isAIParticipant = (participantId: string) => {
     const participant = participants.get(participantId);
     const displayName = participant?.displayName?.toLowerCase() || "";
-    return displayName.includes("ai") || displayName.includes("bot");
+    const isAI = displayName.includes("ai") || displayName.includes("bot");
+    log('debug', 'Checking if participant is AI', { participantId, displayName, isAI });
+    return isAI;
   };
 
   // Separate participants into AI and human
@@ -42,6 +75,12 @@ const MeetingView = ({ setMeetingId }: MeetingViewProps) => {
   const humanParticipants = participantsList.filter(
     (id) => !isAIParticipant(id)
   );
+
+  log('info', 'Participant separation completed', { 
+    aiParticipant, 
+    humanParticipants, 
+    totalParticipants: participantsList.length 
+  });
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 to-black">
@@ -96,13 +135,22 @@ function App() {
   );
   const [_hasPermissions, setHasPermissions] = React.useState(false);
 
+  log('info', 'App component initialized', { 
+    hasToken: !!token, 
+    mode, 
+    selectedLanguage 
+  });
+
   // Request permissions before joining
   const requestPermissions = async () => {
+    log('info', 'Requesting media permissions');
     try {
       await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
       setHasPermissions(true);
+      log('info', 'Media permissions granted');
       return true;
     } catch (err) {
+      log('error', 'Media permissions denied', { error: err });
       console.error("Error getting permissions:", err);
       toast.error(
         "Please allow camera and microphone access to join the meeting"
@@ -112,6 +160,7 @@ function App() {
   };
 
   const validateMeetingId = async (roomId: string) => {
+    log('info', 'Validating meeting ID', { roomId });
     try {
       const response = await fetch(
         `https://api.videosdk.live/v2/rooms/validate/${roomId}`,
@@ -123,24 +172,39 @@ function App() {
           },
         }
       );
-      return response.ok;
+      const isValid = response.ok;
+      log('info', 'Meeting ID validation result', { roomId, isValid, status: response.status });
+      return isValid;
     } catch (error) {
+      log('error', 'Meeting ID validation failed', { roomId, error });
       console.error(error);
       return false;
     }
   };
 
   const createMeeting = async () => {
+    log('info', 'Creating meeting', { userName, selectedLanguage });
+    
     if (!userName) {
+      log('warn', 'Meeting creation failed - no username');
       toast.error("Please enter your name");
       return;
     }
 
     const permissionsGranted = await requestPermissions();
-    if (!permissionsGranted) return;
+    if (!permissionsGranted) {
+      log('warn', 'Meeting creation failed - no permissions');
+      return;
+    }
 
     setIsCreatingMeeting(true);
     try {
+      log('debug', 'Making API request to create meeting', { 
+        url: 'https://api.videosdk.live/v2/rooms',
+        hasToken: !!token,
+        tokenLength: token?.length || 0
+      });
+
       const response = await fetch("https://api.videosdk.live/v2/rooms", {
         method: "POST",
         headers: {
@@ -149,44 +213,115 @@ function App() {
         },
       });
 
+      log('debug', 'API response received', { 
+        status: response.status, 
+        statusText: response.statusText,
+        ok: response.ok
+      });
+
       if (!response.ok) {
-        throw new Error("Failed to create meeting");
+        let errorMessage = "Failed to create meeting";
+        let errorDetails = {};
+        
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || errorMessage;
+          errorDetails = errorData;
+          log('error', 'API error response', { 
+            status: response.status, 
+            error: errorData 
+          });
+        } catch (parseError) {
+          const errorText = await response.text();
+          log('error', 'Failed to parse error response', { 
+            status: response.status, 
+            errorText 
+          });
+          errorDetails = { rawResponse: errorText };
+        }
+
+        // Provide specific error messages based on status code
+        if (response.status === 401) {
+          errorMessage = "Authentication failed - please check your VideoSDK token";
+          log('error', 'Token authentication failed', errorDetails);
+        } else if (response.status === 403) {
+          errorMessage = "Access denied - check your VideoSDK permissions";
+          log('error', 'Access denied', errorDetails);
+        } else if (response.status === 429) {
+          errorMessage = "Rate limit exceeded - please try again later";
+          log('error', 'Rate limit exceeded', errorDetails);
+        } else if (response.status >= 500) {
+          errorMessage = "Server error - please try again later";
+          log('error', 'Server error', errorDetails);
+        }
+
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
+      log('info', 'Meeting created successfully', { 
+        roomId: data.roomId, 
+        userName, 
+        selectedLanguage 
+      });
+      
       setMeetingId(data.roomId);
       toast.success("Meeting created successfully!");
     } catch (error) {
+      log('error', 'Meeting creation failed', { 
+        error: error instanceof Error ? error.message : String(error),
+        errorType: error instanceof Error ? error.constructor.name : typeof error,
+        stack: error instanceof Error ? error.stack : undefined
+      });
       console.error("Error creating meeting:", error);
-      toast.error("Failed to create meeting");
+      
+      // Provide user-friendly error message
+      const userMessage = error instanceof Error ? error.message : "Failed to create meeting";
+      toast.error(userMessage);
     } finally {
       setIsCreatingMeeting(false);
     }
   };
 
   const joinMeeting = async () => {
+    log('info', 'Joining meeting', { userName, joinMeetingId });
+    
     if (!userName) {
+      log('warn', 'Meeting join failed - no username');
       toast.error("Please enter your name");
       return;
     }
     if (!joinMeetingId) {
+      log('warn', 'Meeting join failed - no meeting ID');
       toast.error("Please enter a meeting ID");
       return;
     }
 
     const permissionsGranted = await requestPermissions();
-    if (!permissionsGranted) return;
+    if (!permissionsGranted) {
+      log('warn', 'Meeting join failed - no permissions');
+      return;
+    }
 
     setIsJoiningMeeting(true);
     try {
       const isValid = await validateMeetingId(joinMeetingId);
       if (!isValid) {
+        log('warn', 'Meeting join failed - invalid meeting ID');
         toast.error("Invalid meeting ID");
         return;
       }
+      
+      log('info', 'Meeting joined successfully', { 
+        meetingId: joinMeetingId, 
+        userName, 
+        selectedLanguage 
+      });
+      
       setMeetingId(joinMeetingId);
       toast.success("Joined meeting successfully!");
     } catch (error) {
+      log('error', 'Meeting join failed', { error });
       console.error("Error joining meeting:", error);
       toast.error("Failed to join meeting");
     } finally {

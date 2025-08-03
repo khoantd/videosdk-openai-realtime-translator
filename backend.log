@@ -1,0 +1,358 @@
+2025-08-03 18:53:22,048 - main - INFO - REQUEST: POST http://127.0.0.1:8000/join-player
+2025-08-03 18:53:22,048 - main - INFO - Headers: {'host': '127.0.0.1:8000', 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:141.0) Gecko/20100101 Firefox/141.0', 'accept': '*/*', 'accept-language': 'en-US,en;q=0.5', 'accept-encoding': 'gzip, deflate, br, zstd', 'referer': 'http://localhost:5173/', 'content-type': 'application/json', 'content-length': '273', 'origin': 'http://localhost:5173', 'connection': 'keep-alive', 'sec-fetch-dest': 'empty', 'sec-fetch-mode': 'cors', 'sec-fetch-site': 'cross-site', 'priority': 'u=0', 'pragma': 'no-cache', 'cache-control': 'no-cache'}
+2025-08-03 18:53:22,049 - main - INFO - Request Body: {"meeting_id":"u17a-ntn2-e5d7","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiIyYmNiMDJjMi0wZmFmLTQxNTYtODczOS0yZmRiMTNiNTUyNTgiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc1NDIyMTkyMSwiZXhwIjoxNzU2ODEzOTIxfQ.avRNph_6SEkhW_aGvRPptFkOvpZYyKdg-D6ShZv0-HI"}
+2025-08-03 18:53:22,052 - main - INFO - Received join request for meeting: u17a-ntn2-e5d7
+2025-08-03 18:53:22,053 - main - INFO - Request details: {'meeting_id': 'u17a-ntn2-e5d7', 'token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiIyYmNiMDJjMi0wZmFmLTQxNTYtODczOS0yZmRiMTNiNTUyNTgiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc1NDIyMTkyMSwiZXhwIjoxNzU2ODEzOTIxfQ.avRNph_6SEkhW_aGvRPptFkOvpZYyKdg-D6ShZv0-HI'}
+2025-08-03 18:53:22,053 - main - INFO - AI agent join task added to background tasks
+2025-08-03 18:53:22,053 - main - INFO - RESPONSE: 200 - Processed in 0.0055s
+2025-08-03 18:53:22,054 - main - INFO - Starting AI Agent for meeting: u17a-ntn2-e5d7
+2025-08-03 18:53:22,054 - main - INFO - Token: eyJhbGciOiJIUzI1NiIs...
+2025-08-03 18:53:22,054 - agent.ai_agent - INFO - Initializing AI Agent: AI for meeting: u17a-ntn2-e5d7
+2025-08-03 18:53:22,054 - agent.audio_stream_track - INFO - Initializing CustomAudioStreamTrack
+2025-08-03 18:53:22,055 - agent.audio_stream_track - INFO - Starting audio processing thread
+2025-08-03 18:53:22,055 - agent.audio_stream_track - INFO - Audio track initialized - Sample rate: 24000, Channels: 1
+2025-08-03 18:53:22,056 - agent.audio_stream_track - INFO - Chunk size: 960 bytes, Samples per frame: 480
+2025-08-03 18:53:22,061 - agent.ai_agent - INFO - Setting up event listeners for meeting
+2025-08-03 18:53:22,061 - agent.ai_agent - INFO - Initializing OpenAI Intelligence module
+2025-08-03 18:53:22,061 - intelligence.openai.openai_intelligence - INFO - Initializing OpenAI Intelligence with model: gpt-4o-realtime-preview-2024-10-01
+2025-08-03 18:53:22,061 - intelligence.openai.openai_intelligence - INFO - Base URL: api.openai.com
+2025-08-03 18:53:22,061 - intelligence.openai.openai_intelligence - INFO - Voice: Voices.Alloy
+2025-08-03 18:53:22,061 - intelligence.openai.openai_intelligence - INFO - Temperature: 0.8
+2025-08-03 18:53:22,062 - intelligence.openai.openai_intelligence - INFO - Modalities: ['text', 'audio']
+2025-08-03 18:53:22,062 - intelligence.openai.openai_intelligence - INFO - OpenAI Intelligence initialization completed
+2025-08-03 18:53:22,062 - agent.ai_agent - INFO - AI Agent initialization completed
+2025-08-03 18:53:22,062 - main - INFO - Attempting to join meeting...
+2025-08-03 18:53:22,062 - agent.ai_agent - INFO - Attempting to join meeting...
+2025-08-03 18:53:22,066 - agent.audio_stream_track - INFO - Audio processing loop started
+2025-08-03 18:53:25,722 - agent.ai_agent - INFO - Participant joined: Khoa Nguyen
+2025-08-03 18:53:25,722 - agent.ai_agent - INFO - Native language: English
+2025-08-03 18:53:25,722 - agent.ai_agent - INFO - Participant ID: 7pcicuow
+2025-08-03 18:53:25,722 - agent.ai_agent - INFO - Participant metadata: {'preferredLanguage': 'English'}
+2025-08-03 18:53:25,722 - agent.ai_agent - INFO - Current participants data: {'7pcicuow': {'name': 'Khoa Nguyen', 'lang': 'English'}}
+2025-08-03 18:53:26,172 - aioice.ice - INFO - Connection(5) Check CandidatePair(('172.16.67.170', 49442) -> ('18.142.95.61', 48391)) State.FROZEN -> State.WAITING
+2025-08-03 18:53:26,172 - aioice.ice - INFO - Connection(5) Check CandidatePair(('172.16.67.170', 49442) -> ('18.142.95.61', 48391)) State.WAITING -> State.IN_PROGRESS
+2025-08-03 18:53:26,176 - agent.ai_agent - INFO - Participant stream enabled - Type: video
+2025-08-03 18:53:26,176 - agent.ai_agent - INFO - Stream ID: 9be3769b-45a8-46d4-a8c5-660ef5842acb
+2025-08-03 18:53:26,176 - agent.ai_agent - INFO - Participant stream enabled for: Khoa Nguyen
+2025-08-03 18:53:26,196 - aioice.ice - INFO - Connection(4) Check CandidatePair(('172.16.67.170', 61125) -> ('18.142.95.61', 45694)) State.FROZEN -> State.IN_PROGRESS
+2025-08-03 18:53:26,224 - aioice.ice - INFO - Connection(5) Check CandidatePair(('172.16.67.170', 49442) -> ('18.142.95.61', 48391)) nominating pair
+2025-08-03 18:53:26,240 - aioice.ice - INFO - Connection(4) Check CandidatePair(('172.16.67.170', 61125) -> ('18.142.95.61', 45694)) nominating pair
+2025-08-03 18:53:26,274 - aioice.ice - INFO - Connection(5) Check CandidatePair(('172.16.67.170', 49442) -> ('18.142.95.61', 48391)) State.IN_PROGRESS -> State.SUCCEEDED
+2025-08-03 18:53:26,274 - aioice.ice - INFO - Connection(5) ICE completed
+2025-08-03 18:53:26,332 - aioice.ice - INFO - Connection(4) Check CandidatePair(('172.16.67.170', 61125) -> ('18.142.95.61', 45694)) State.IN_PROGRESS -> State.SUCCEEDED
+2025-08-03 18:53:26,332 - aioice.ice - INFO - Connection(4) ICE completed
+2025-08-03 18:53:26,676 - agent.ai_agent - INFO - Meeting Joined - Data: {'participants': [], 'messages': [], 'base_url': 'sg1.rm.videosdk.live'}
+2025-08-03 18:53:26,677 - agent.ai_agent - INFO - Starting OpenAI connection
+2025-08-03 18:53:26,677 - agent.ai_agent - INFO - Successfully joined meeting
+2025-08-03 18:53:26,677 - main - INFO - Successfully joined meeting
+2025-08-03 18:53:26,677 - intelligence.openai.openai_intelligence - INFO - Establishing OpenAI WS connection to: wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview
+2025-08-03 18:53:28,191 - intelligence.openai.openai_intelligence - INFO - OpenAI WebSocket connection established successfully
+2025-08-03 18:53:28,191 - intelligence.openai.openai_intelligence - INFO - Starting message handler task
+2025-08-03 18:53:28,191 - intelligence.openai.openai_intelligence - INFO - List of tools: []
+2025-08-03 18:53:28,191 - intelligence.openai.openai_intelligence - INFO - Updating session with initial parameters
+2025-08-03 18:53:28,191 - intelligence.openai.openai_intelligence - INFO - Updating session with tools: []
+2025-08-03 18:53:28,191 - intelligence.openai.openai_intelligence - INFO - Starting message handler
+2025-08-03 18:53:28,209 - intelligence.openai.openai_intelligence - INFO - Session Created: sess_C0RZIjgk2pUxn8qB7pfsf
+2025-08-03 18:53:31,484 - agent.ai_agent - INFO - Participant stream enabled - Type: audio
+2025-08-03 18:53:31,484 - agent.ai_agent - INFO - Stream ID: f4579879-f9db-4aac-956b-b970962a8063
+2025-08-03 18:53:31,484 - agent.ai_agent - INFO - Participant stream enabled for: Khoa Nguyen
+2025-08-03 18:53:31,484 - agent.ai_agent - INFO - Creating audio listener task for stream: f4579879-f9db-4aac-956b-b970962a8063
+2025-08-03 18:53:31,484 - agent.ai_agent - INFO - Starting audio listener for participant: Khoa Nguyen
+2025-08-03 18:56:45,982 - intelligence.openai.openai_intelligence - ERROR - Failed to establish WebSocket connection: Cannot write to closing transport
+2025-08-03 18:56:45,983 - intelligence.openai.openai_intelligence - ERROR - Exception type: ClientConnectionResetError
+2025-08-03 18:56:45,983 - asyncio - ERROR - Task exception was never retrieved
+future: <Task finished name='Task-52' coro=<OpenAIIntelligence.connect() done, defined at /Volumes/Data/Software Development/Python/videosdk-openai-realtime-translator/intelligence/openai/openai_intelligence.py:112> exception=ClientConnectionResetError('Cannot write to closing transport')>
+Traceback (most recent call last):
+  File "/Volumes/Data/Software Development/Python/videosdk-openai-realtime-translator/intelligence/openai/openai_intelligence.py", line 142, in connect
+    await self.receive_message_task
+  File "/Volumes/Data/Software Development/Python/videosdk-openai-realtime-translator/intelligence/openai/openai_intelligence.py", line 196, in receive_message_handler
+    async for response in self.ws:
+  File "/Volumes/Data/Software Development/Python/videosdk-openai-realtime-translator/.venv/lib/python3.11/site-packages/aiohttp/client_ws.py", line 414, in __anext__
+    msg = await self.receive()
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/Data/Software Development/Python/videosdk-openai-realtime-translator/.venv/lib/python3.11/site-packages/aiohttp/client_ws.py", line 378, in receive
+    await self.pong(msg.data)
+  File "/Volumes/Data/Software Development/Python/videosdk-openai-realtime-translator/.venv/lib/python3.11/site-packages/aiohttp/client_ws.py", line 234, in pong
+    await self._writer.send_frame(message, WSMsgType.PONG)
+  File "/Volumes/Data/Software Development/Python/videosdk-openai-realtime-translator/.venv/lib/python3.11/site-packages/aiohttp/_websocket/writer.py", line 126, in send_frame
+    raise ClientConnectionResetError("Cannot write to closing transport")
+aiohttp.client_exceptions.ClientConnectionResetError: Cannot write to closing transport
+2025-08-03 18:56:46,556 - agent.ai_agent - INFO - Participant stream disabled - Type: audio
+2025-08-03 18:56:46,556 - agent.ai_agent - INFO - Stream ID: f4579879-f9db-4aac-956b-b970962a8063
+2025-08-03 18:56:46,556 - agent.ai_agent - INFO - Cancelling audio listener task for stream: f4579879-f9db-4aac-956b-b970962a8063
+2025-08-03 18:56:46,609 - agent.ai_agent - INFO - Participant stream enabled - Type: audio
+2025-08-03 18:56:46,609 - agent.ai_agent - INFO - Stream ID: f59c0999-1ba1-4656-aca6-db8c3f97a3a9
+2025-08-03 18:56:46,609 - agent.ai_agent - INFO - Participant stream enabled for: Khoa Nguyen
+2025-08-03 18:56:46,609 - agent.ai_agent - INFO - Creating audio listener task for stream: f59c0999-1ba1-4656-aca6-db8c3f97a3a9
+2025-08-03 18:56:46,609 - videosdk.room_client - ERROR - signal :: Error while websocket request: no close frame received or sent
+2025-08-03 18:56:46,610 - agent.ai_agent - INFO - Participant stream disabled - Type: audio
+2025-08-03 18:56:46,610 - agent.ai_agent - INFO - Stream ID: f59c0999-1ba1-4656-aca6-db8c3f97a3a9
+2025-08-03 18:56:46,610 - agent.ai_agent - INFO - Cancelling audio listener task for stream: f59c0999-1ba1-4656-aca6-db8c3f97a3a9
+2025-08-03 18:56:46,610 - videosdk.room_client - ERROR - signal :: error while handling signal messages :: no close frame received or sent
+2025-08-03 18:57:12,879 - aioice.ice - INFO - Connection(5) Consent to send expired
+2025-08-03 18:57:14,256 - aioice.ice - INFO - Connection(4) Consent to send expired
+2025-08-03 19:03:04,895 - main - INFO - REQUEST: POST http://127.0.0.1:8000/join-player
+2025-08-03 19:03:04,895 - main - INFO - Headers: {'host': '127.0.0.1:8000', 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:141.0) Gecko/20100101 Firefox/141.0', 'accept': '*/*', 'accept-language': 'en-US,en;q=0.5', 'accept-encoding': 'gzip, deflate, br, zstd', 'referer': 'http://localhost:5173/', 'content-type': 'application/json', 'content-length': '273', 'origin': 'http://localhost:5173', 'connection': 'keep-alive', 'sec-fetch-dest': 'empty', 'sec-fetch-mode': 'cors', 'sec-fetch-site': 'cross-site', 'priority': 'u=0'}
+2025-08-03 19:03:04,895 - main - INFO - Request Body: {"meeting_id":"f9fk-jf2i-wgu7","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiIyYmNiMDJjMi0wZmFmLTQxNTYtODczOS0yZmRiMTNiNTUyNTgiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc1NDIyMTkyMSwiZXhwIjoxNzU2ODEzOTIxfQ.avRNph_6SEkhW_aGvRPptFkOvpZYyKdg-D6ShZv0-HI"}
+2025-08-03 19:03:04,896 - main - INFO - Received join request for meeting: f9fk-jf2i-wgu7
+2025-08-03 19:03:04,896 - main - INFO - Request details: {'meeting_id': 'f9fk-jf2i-wgu7', 'token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiIyYmNiMDJjMi0wZmFmLTQxNTYtODczOS0yZmRiMTNiNTUyNTgiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTc1NDIyMTkyMSwiZXhwIjoxNzU2ODEzOTIxfQ.avRNph_6SEkhW_aGvRPptFkOvpZYyKdg-D6ShZv0-HI'}
+2025-08-03 19:03:04,896 - main - INFO - AI agent join task added to background tasks
+2025-08-03 19:03:04,897 - main - INFO - RESPONSE: 200 - Processed in 0.0019s
+2025-08-03 19:03:04,903 - main - INFO - Starting AI Agent for meeting: f9fk-jf2i-wgu7
+2025-08-03 19:03:04,903 - main - INFO - Token: eyJhbGciOiJIUzI1NiIs...
+2025-08-03 19:03:04,903 - agent.ai_agent - INFO - Initializing AI Agent: AI for meeting: f9fk-jf2i-wgu7
+2025-08-03 19:03:04,903 - agent.audio_stream_track - INFO - Initializing CustomAudioStreamTrack
+2025-08-03 19:03:04,908 - agent.audio_stream_track - INFO - Starting audio processing thread
+2025-08-03 19:03:04,908 - agent.audio_stream_track - INFO - Audio track initialized - Sample rate: 24000, Channels: 1
+2025-08-03 19:03:04,909 - agent.audio_stream_track - INFO - Chunk size: 960 bytes, Samples per frame: 480
+2025-08-03 19:03:04,909 - agent.ai_agent - INFO - Setting up event listeners for meeting
+2025-08-03 19:03:04,909 - agent.ai_agent - INFO - Initializing OpenAI Intelligence module
+2025-08-03 19:03:04,909 - intelligence.openai.openai_intelligence - INFO - Initializing OpenAI Intelligence with model: gpt-4o-realtime-preview-2024-10-01
+2025-08-03 19:03:04,909 - intelligence.openai.openai_intelligence - INFO - Base URL: api.openai.com
+2025-08-03 19:03:04,909 - agent.audio_stream_track - INFO - Audio processing loop started
+2025-08-03 19:03:04,909 - intelligence.openai.openai_intelligence - INFO - Voice: Voices.Alloy
+2025-08-03 19:03:04,909 - intelligence.openai.openai_intelligence - INFO - Temperature: 0.8
+2025-08-03 19:03:04,909 - intelligence.openai.openai_intelligence - INFO - Modalities: ['text', 'audio']
+2025-08-03 19:03:04,909 - intelligence.openai.openai_intelligence - INFO - OpenAI Intelligence initialization completed
+2025-08-03 19:03:04,909 - agent.ai_agent - INFO - AI Agent initialization completed
+2025-08-03 19:03:04,909 - main - INFO - Attempting to join meeting...
+2025-08-03 19:03:04,910 - agent.ai_agent - INFO - Attempting to join meeting...
+2025-08-03 19:03:06,365 - agent.ai_agent - INFO - Participant joined: Khoa
+2025-08-03 19:03:06,365 - agent.ai_agent - INFO - Native language: English
+2025-08-03 19:03:06,366 - agent.ai_agent - INFO - Participant ID: q95aktaa
+2025-08-03 19:03:06,366 - agent.ai_agent - INFO - Participant metadata: {'preferredLanguage': 'English'}
+2025-08-03 19:03:06,366 - agent.ai_agent - INFO - Current participants data: {'q95aktaa': {'name': 'Khoa', 'lang': 'English'}}
+2025-08-03 19:03:06,535 - aioice.ice - INFO - Connection(13) Check CandidatePair(('172.16.67.170', 51847) -> ('18.142.95.61', 44746)) State.FROZEN -> State.IN_PROGRESS
+2025-08-03 19:03:06,568 - aioice.ice - INFO - Connection(14) Check CandidatePair(('172.16.67.170', 49214) -> ('18.142.95.61', 47565)) State.FROZEN -> State.WAITING
+2025-08-03 19:03:06,568 - aioice.ice - INFO - Connection(14) Check CandidatePair(('172.16.67.170', 49214) -> ('18.142.95.61', 47565)) State.WAITING -> State.IN_PROGRESS
+2025-08-03 19:03:06,576 - agent.ai_agent - INFO - Participant stream enabled - Type: video
+2025-08-03 19:03:06,576 - agent.ai_agent - INFO - Stream ID: 793ff065-33b0-45c5-a177-00869b7d9cf3
+2025-08-03 19:03:06,576 - agent.ai_agent - INFO - Participant stream enabled for: Khoa
+2025-08-03 19:03:06,577 - aioice.ice - INFO - Connection(13) Check CandidatePair(('172.16.67.170', 51847) -> ('18.142.95.61', 44746)) nominating pair
+2025-08-03 19:03:06,644 - aioice.ice - INFO - Connection(13) Check CandidatePair(('172.16.67.170', 51847) -> ('18.142.95.61', 44746)) State.IN_PROGRESS -> State.SUCCEEDED
+2025-08-03 19:03:06,644 - aioice.ice - INFO - Connection(13) ICE completed
+2025-08-03 19:03:06,644 - aioice.ice - INFO - Connection(14) Check CandidatePair(('172.16.67.170', 49214) -> ('18.142.95.61', 47565)) nominating pair
+2025-08-03 19:03:06,711 - aioice.ice - INFO - Connection(14) Check CandidatePair(('172.16.67.170', 49214) -> ('18.142.95.61', 47565)) State.IN_PROGRESS -> State.SUCCEEDED
+2025-08-03 19:03:06,711 - aioice.ice - INFO - Connection(14) ICE completed
+2025-08-03 19:03:06,914 - agent.ai_agent - INFO - Meeting Joined - Data: {'participants': [], 'messages': [], 'base_url': 'sg1.rm.videosdk.live'}
+2025-08-03 19:03:06,914 - agent.ai_agent - INFO - Starting OpenAI connection
+2025-08-03 19:03:06,914 - agent.ai_agent - INFO - Successfully joined meeting
+2025-08-03 19:03:06,914 - main - INFO - Successfully joined meeting
+2025-08-03 19:03:06,914 - intelligence.openai.openai_intelligence - INFO - Establishing OpenAI WS connection to: wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview
+2025-08-03 19:03:08,321 - intelligence.openai.openai_intelligence - INFO - OpenAI WebSocket connection established successfully
+2025-08-03 19:03:08,324 - intelligence.openai.openai_intelligence - INFO - Starting message handler task
+2025-08-03 19:03:08,324 - intelligence.openai.openai_intelligence - INFO - List of tools: []
+2025-08-03 19:03:08,324 - intelligence.openai.openai_intelligence - INFO - Updating session with initial parameters
+2025-08-03 19:03:08,324 - intelligence.openai.openai_intelligence - INFO - Updating session with tools: []
+2025-08-03 19:03:08,330 - intelligence.openai.openai_intelligence - INFO - Starting message handler
+2025-08-03 19:03:08,343 - intelligence.openai.openai_intelligence - INFO - Session Created: sess_C0Rie9zNodFkt7po2xzk3
+2025-08-03 19:03:09,516 - agent.ai_agent - INFO - Participant stream enabled - Type: audio
+2025-08-03 19:03:09,516 - agent.ai_agent - INFO - Stream ID: af911d91-bee7-492f-bb68-7587e9543d8d
+2025-08-03 19:03:09,517 - agent.ai_agent - INFO - Participant stream enabled for: Khoa
+2025-08-03 19:03:09,517 - agent.ai_agent - INFO - Creating audio listener task for stream: af911d91-bee7-492f-bb68-7587e9543d8d
+2025-08-03 19:03:09,521 - agent.ai_agent - INFO - Starting audio listener for participant: Khoa
+2025-08-03 19:03:11,031 - intelligence.openai.openai_intelligence - INFO - Speech started - Clearing audio queue
+2025-08-03 19:03:14,065 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 100, FPS: 22.01
+2025-08-03 19:03:14,065 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 100, FPS: 10.92
+2025-08-03 19:03:14,248 - agent.ai_agent - INFO - Participant stream disabled - Type: audio
+2025-08-03 19:03:14,248 - agent.ai_agent - INFO - Stream ID: af911d91-bee7-492f-bb68-7587e9543d8d
+2025-08-03 19:03:14,248 - agent.ai_agent - INFO - Cancelling audio listener task for stream: af911d91-bee7-492f-bb68-7587e9543d8d
+2025-08-03 19:03:15,507 - intelligence.openai.openai_intelligence - INFO - Response Transcription: I'm doing well, thank you for asking! How about you?
+2025-08-03 19:03:15,693 - intelligence.openai.openai_intelligence - INFO - Client Transcription: Hello, how are you?
+2025-08-03 19:03:16,223 - agent.ai_agent - INFO - Participant stream enabled - Type: audio
+2025-08-03 19:03:16,223 - agent.ai_agent - INFO - Stream ID: 53458b75-4442-4f30-be4f-9a0fd9a0b84c
+2025-08-03 19:03:16,223 - agent.ai_agent - INFO - Participant stream enabled for: Khoa
+2025-08-03 19:03:16,223 - agent.ai_agent - INFO - Creating audio listener task for stream: 53458b75-4442-4f30-be4f-9a0fd9a0b84c
+2025-08-03 19:03:16,224 - agent.ai_agent - INFO - Starting audio listener for participant: Khoa
+2025-08-03 19:03:16,582 - agent.audio_stream_track - INFO - Audio processing stats - Frames: 100, FPS: 8.57, MB processed: 0.11
+2025-08-03 19:03:17,428 - agent.audio_stream_track - INFO - Audio processing stats - Frames: 200, FPS: 15.97, MB processed: 0.18
+2025-08-03 19:03:24,655 - agent.ai_agent - INFO - Participant stream enabled - Type: audio
+2025-08-03 19:03:24,656 - agent.ai_agent - INFO - Stream ID: dc6f8cca-e9e9-4101-9b6f-ef723856acfd
+2025-08-03 19:03:24,656 - agent.ai_agent - INFO - Participant stream enabled for: Khoa
+2025-08-03 19:03:24,656 - agent.ai_agent - INFO - Creating audio listener task for stream: dc6f8cca-e9e9-4101-9b6f-ef723856acfd
+2025-08-03 19:03:24,656 - agent.ai_agent - INFO - Starting audio listener for participant: Khoa
+2025-08-03 19:03:25,367 - intelligence.openai.openai_intelligence - INFO - Speech started - Clearing audio queue
+2025-08-03 19:03:26,602 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 200, FPS: 9.22
+2025-08-03 19:03:28,417 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 100, FPS: 8.20
+2025-08-03 19:03:29,359 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 300, FPS: 12.27
+2025-08-03 19:03:30,166 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 100, FPS: 18.15
+2025-08-03 19:03:30,408 - intelligence.openai.openai_intelligence - INFO - Speech started - Clearing audio queue
+2025-08-03 19:03:30,869 - intelligence.openai.openai_intelligence - INFO - Speech started - Clearing audio queue
+2025-08-03 19:03:31,521 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 400, FPS: 15.03
+2025-08-03 19:03:32,087 - intelligence.openai.openai_intelligence - INFO - Client Transcription: In the name of the law and the nation, I have the right to believe what I want to believe.
+2025-08-03 19:03:32,472 - agent.ai_agent - INFO - Participant stream disabled - Type: audio
+2025-08-03 19:03:32,472 - agent.ai_agent - INFO - Stream ID: dc6f8cca-e9e9-4101-9b6f-ef723856acfd
+2025-08-03 19:03:32,472 - agent.ai_agent - INFO - Cancelling audio listener task for stream: dc6f8cca-e9e9-4101-9b6f-ef723856acfd
+2025-08-03 19:03:33,202 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 200, FPS: 11.78
+2025-08-03 19:03:33,721 - intelligence.openai.openai_intelligence - INFO - Client Transcription: 
+2025-08-03 19:03:33,905 - intelligence.openai.openai_intelligence - INFO - Response Transcription: That’s good to hear! Let me know if there’s anything specific you’d like to talk about or any questions you have.
+2025-08-03 19:03:34,330 - intelligence.openai.openai_intelligence - INFO - Speech started - Clearing audio queue
+2025-08-03 19:03:34,695 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 500, FPS: 16.79
+2025-08-03 19:03:34,915 - agent.audio_stream_track - INFO - Audio processing stats - Frames: 300, FPS: 10.00, MB processed: 0.30
+2025-08-03 19:03:35,579 - intelligence.openai.openai_intelligence - INFO - Client Transcription: 
+2025-08-03 19:03:36,147 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 300, FPS: 15.06
+2025-08-03 19:03:36,163 - intelligence.openai.openai_intelligence - INFO - Speech started - Clearing audio queue
+2025-08-03 19:03:36,474 - agent.audio_stream_track - INFO - Audio processing stats - Frames: 400, FPS: 12.67, MB processed: 0.39
+2025-08-03 19:03:37,341 - asyncio - ERROR - Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x10cca2dd0>
+2025-08-03 19:03:37,415 - asyncio - ERROR - Task was destroyed but it is pending!
+task: <Task pending name='Task-614' coro=<Queue.put() running at /Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/queues.py:120> wait_for=<Future pending cb=[Task.task_wakeup()]> cb=[_chain_future.<locals>._call_set_state() at /Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/futures.py:394]>
+2025-08-03 19:03:37,415 - asyncio - ERROR - Task was destroyed but it is pending!
+task: <Task pending name='Task-620' coro=<Queue.put() running at /Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/queues.py:120> wait_for=<Future pending cb=[Task.task_wakeup()]> cb=[_chain_future.<locals>._call_set_state() at /Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/futures.py:394]>
+2025-08-03 19:03:37,416 - asyncio - ERROR - Task was destroyed but it is pending!
+task: <Task pending name='Task-627' coro=<Queue.put() running at /Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/queues.py:120> wait_for=<Future pending cb=[Task.task_wakeup()]> cb=[_chain_future.<locals>._call_set_state() at /Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/futures.py:394]>
+2025-08-03 19:03:37,429 - asyncio - ERROR - Task was destroyed but it is pending!
+task: <Task pending name='Task-633' coro=<Queue.put() running at /Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/queues.py:120> wait_for=<Future pending cb=[Task.task_wakeup()]> cb=[_chain_future.<locals>._call_set_state() at /Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/futures.py:394]>
+2025-08-03 19:03:37,431 - asyncio - ERROR - Task was destroyed but it is pending!
+task: <Task pending name='Task-954' coro=<Queue.put() running at /Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/queues.py:120> wait_for=<Future pending cb=[Task.task_wakeup()]> cb=[_chain_future.<locals>._call_set_state() at /Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/asyncio/futures.py:394]>
+2025-08-03 19:03:37,516 - intelligence.openai.openai_intelligence - INFO - Client Transcription: Just later
+2025-08-03 19:03:39,002 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 600, FPS: 17.60
+2025-08-03 19:03:39,252 - agent.audio_stream_track - INFO - Audio processing stats - Frames: 500, FPS: 14.56, MB processed: 0.48
+2025-08-03 19:03:40,457 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 400, FPS: 16.51
+2025-08-03 19:03:41,728 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 700, FPS: 19.01
+2025-08-03 19:03:43,712 - intelligence.openai.openai_intelligence - INFO - Client Transcription: of any languages in the world, okay?
+2025-08-03 19:03:44,150 - agent.audio_stream_track - INFO - Audio processing stats - Frames: 600, FPS: 15.29, MB processed: 0.56
+2025-08-03 19:03:45,545 - agent.audio_stream_track - INFO - Audio processing stats - Frames: 700, FPS: 17.23, MB processed: 0.64
+2025-08-03 19:03:45,879 - intelligence.openai.openai_intelligence - INFO - Response Transcription: Sure, I can help with that! Just let me know what you’d like translated and into which language.
+2025-08-03 19:03:47,553 - agent.audio_stream_track - INFO - Audio processing stats - Frames: 800, FPS: 18.76, MB processed: 0.76
+2025-08-03 19:03:52,118 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 500, FPS: 13.93
+2025-08-03 19:03:54,409 - agent.ai_agent - INFO - Participant stream enabled - Type: audio
+2025-08-03 19:03:54,409 - agent.ai_agent - INFO - Stream ID: fdc603d9-9b71-45d1-a3f6-5d9488f91bdc
+2025-08-03 19:03:54,409 - agent.ai_agent - INFO - Participant stream enabled for: Khoa
+2025-08-03 19:03:54,409 - agent.ai_agent - INFO - Creating audio listener task for stream: fdc603d9-9b71-45d1-a3f6-5d9488f91bdc
+2025-08-03 19:03:54,413 - agent.ai_agent - INFO - Starting audio listener for participant: Khoa
+2025-08-03 19:03:54,922 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 800, FPS: 16.00
+2025-08-03 19:03:55,379 - agent.ai_agent - INFO - Participant stream disabled - Type: audio
+2025-08-03 19:03:55,379 - agent.ai_agent - INFO - Stream ID: fdc603d9-9b71-45d1-a3f6-5d9488f91bdc
+2025-08-03 19:03:55,379 - agent.ai_agent - INFO - Cancelling audio listener task for stream: fdc603d9-9b71-45d1-a3f6-5d9488f91bdc
+2025-08-03 19:03:57,062 - agent.ai_agent - INFO - Participant stream enabled - Type: audio
+2025-08-03 19:03:57,062 - agent.ai_agent - INFO - Stream ID: 8f844a90-e752-4ee3-8064-4b08a735e344
+2025-08-03 19:03:57,062 - agent.ai_agent - INFO - Participant stream enabled for: Khoa
+2025-08-03 19:03:57,063 - agent.ai_agent - INFO - Creating audio listener task for stream: 8f844a90-e752-4ee3-8064-4b08a735e344
+2025-08-03 19:03:57,071 - agent.ai_agent - INFO - Starting audio listener for participant: Khoa
+2025-08-03 19:03:57,335 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 600, FPS: 14.59
+2025-08-03 19:03:57,962 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 900, FPS: 16.96
+2025-08-03 19:03:58,690 - intelligence.openai.openai_intelligence - INFO - Speech started - Clearing audio queue
+2025-08-03 19:03:59,420 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 1000, FPS: 18.34
+2025-08-03 19:03:59,925 - intelligence.openai.openai_intelligence - INFO - Speech started - Clearing audio queue
+2025-08-03 19:04:00,810 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 100, FPS: 26.75
+2025-08-03 19:04:01,116 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 700, FPS: 15.59
+2025-08-03 19:04:01,601 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 1100, FPS: 19.40
+2025-08-03 19:04:01,809 - intelligence.openai.openai_intelligence - INFO - Speech started - Clearing audio queue
+2025-08-03 19:04:02,271 - intelligence.openai.openai_intelligence - INFO - Speech started - Clearing audio queue
+2025-08-03 19:04:03,084 - intelligence.openai.openai_intelligence - INFO - Client Transcription: I wills. Great wills.
+2025-08-03 19:04:03,429 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 1200, FPS: 20.51
+2025-08-03 19:04:03,479 - intelligence.openai.openai_intelligence - INFO - Speech started - Clearing audio queue
+2025-08-03 19:04:04,332 - intelligence.openai.openai_intelligence - INFO - Client Transcription: I
+2025-08-03 19:04:04,350 - intelligence.openai.openai_intelligence - INFO - Speech started - Clearing audio queue
+2025-08-03 19:04:04,793 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 200, FPS: 25.90
+2025-08-03 19:04:05,079 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 800, FPS: 16.38
+2025-08-03 19:04:05,487 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 1300, FPS: 21.46
+2025-08-03 19:04:05,846 - intelligence.openai.openai_intelligence - INFO - Client Transcription: Rrrrrrrrrrrrrrrrrrrrrrrrrr
+2025-08-03 19:04:05,988 - intelligence.openai.openai_intelligence - INFO - Client Transcription: 
+2025-08-03 19:04:06,179 - intelligence.openai.openai_intelligence - INFO - Speech started - Clearing audio queue
+2025-08-03 19:04:06,334 - intelligence.openai.openai_intelligence - INFO - Response Transcription: That’s wonderful! The world is indeed a fascinating place with
+2025-08-03 19:04:07,181 - intelligence.openai.openai_intelligence - INFO - Client Transcription: 
+2025-08-03 19:04:07,185 - agent.ai_agent - INFO - Participant stream disabled - Type: audio
+2025-08-03 19:04:07,185 - agent.ai_agent - INFO - Stream ID: 8f844a90-e752-4ee3-8064-4b08a735e344
+2025-08-03 19:04:07,185 - agent.ai_agent - INFO - Cancelling audio listener task for stream: 8f844a90-e752-4ee3-8064-4b08a735e344
+2025-08-03 19:04:07,623 - agent.ai_agent - INFO - Participant stream enabled - Type: audio
+2025-08-03 19:04:07,624 - agent.ai_agent - INFO - Stream ID: b34d96c4-52b7-4c34-9c2c-afb89d1f8a95
+2025-08-03 19:04:07,624 - agent.ai_agent - INFO - Participant stream enabled for: Khoa
+2025-08-03 19:04:07,624 - agent.ai_agent - INFO - Creating audio listener task for stream: b34d96c4-52b7-4c34-9c2c-afb89d1f8a95
+2025-08-03 19:04:07,627 - agent.ai_agent - INFO - Starting audio listener for participant: Khoa
+2025-08-03 19:04:07,668 - intelligence.openai.openai_intelligence - INFO - Client Transcription: I'm gonna get you die.
+2025-08-03 19:04:07,680 - agent.audio_stream_track - INFO - Audio processing stats - Frames: 900, FPS: 14.34, MB processed: 0.84
+2025-08-03 19:04:07,879 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 1400, FPS: 22.23
+2025-08-03 19:04:08,451 - intelligence.openai.openai_intelligence - INFO - Response Transcription: so many cultures, languages, and experiences to explore. What’s one place you’d love to visit?
+2025-08-03 19:04:08,679 - intelligence.openai.openai_intelligence - INFO - Client Transcription: 
+2025-08-03 19:04:09,301 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 900, FPS: 16.96
+2025-08-03 19:04:09,856 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 1500, FPS: 23.10
+2025-08-03 19:04:10,085 - agent.audio_stream_track - INFO - Audio processing stats - Frames: 1000, FPS: 15.34, MB processed: 0.92
+2025-08-03 19:04:10,822 - intelligence.openai.openai_intelligence - INFO - Speech started - Clearing audio queue
+2025-08-03 19:04:11,578 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 100, FPS: 25.31
+2025-08-03 19:04:11,683 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 1600, FPS: 23.96
+2025-08-03 19:04:13,110 - intelligence.openai.openai_intelligence - INFO - Speech started - Clearing audio queue
+2025-08-03 19:04:13,210 - intelligence.openai.openai_intelligence - INFO - Response Transcription: Japan is an amazing choice! The culture, food, and scenery
+2025-08-03 19:04:13,486 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 1000, FPS: 17.46
+2025-08-03 19:04:13,656 - agent.audio_stream_track - INFO - Audio processing stats - Frames: 1100, FPS: 16.00, MB processed: 1.04
+2025-08-03 19:04:14,403 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 1700, FPS: 24.46
+2025-08-03 19:04:15,123 - intelligence.openai.openai_intelligence - INFO - Client Transcription: 
+2025-08-03 19:04:15,140 - intelligence.openai.openai_intelligence - INFO - Speech started - Clearing audio queue
+2025-08-03 19:04:15,175 - intelligence.openai.openai_intelligence - INFO - Response Transcription: are truly unique and beautiful. Is there something specific about Japan that interests you the most?
+2025-08-03 19:04:15,881 - intelligence.openai.openai_intelligence - INFO - Speech started - Clearing audio queue
+2025-08-03 19:04:15,941 - intelligence.openai.openai_intelligence - INFO - Response Transcription: The culture really
+2025-08-03 19:04:16,219 - intelligence.openai.openai_intelligence - INFO - Client Transcription: 
+2025-08-03 19:04:16,417 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 200, FPS: 22.75
+2025-08-03 19:04:16,546 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 1800, FPS: 25.13
+2025-08-03 19:04:16,592 - agent.audio_stream_track - INFO - Audio processing stats - Frames: 1200, FPS: 16.74, MB processed: 1.12
+2025-08-03 19:04:17,430 - intelligence.openai.openai_intelligence - INFO - Client Transcription: Why?
+2025-08-03 19:04:17,650 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 1100, FPS: 17.91
+2025-08-03 19:04:17,762 - intelligence.openai.openai_intelligence - INFO - Client Transcription: 
+2025-08-03 19:04:17,958 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 1900, FPS: 26.01
+2025-08-03 19:04:18,624 - intelligence.openai.openai_intelligence - INFO - Response Transcription: is so rich and diverse, with deep traditions and modern innovations blending together. It’s a fascinating place.
+2025-08-03 19:04:18,820 - agent.audio_stream_track - INFO - Audio processing stats - Frames: 1300, FPS: 17.59, MB processed: 1.20
+2025-08-03 19:04:19,603 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 300, FPS: 25.05
+2025-08-03 19:04:20,877 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 2000, FPS: 26.33
+2025-08-03 19:04:22,046 - agent.audio_stream_track - INFO - Audio processing stats - Frames: 1400, FPS: 18.15, MB processed: 1.32
+2025-08-03 19:04:23,410 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 400, FPS: 25.34
+2025-08-03 19:04:23,910 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 2100, FPS: 26.58
+2025-08-03 19:04:24,337 - agent.audio_stream_track - INFO - Audio processing stats - Frames: 1500, FPS: 18.88, MB processed: 1.38
+2025-08-03 19:04:26,480 - agent.audio_stream_track - INFO - Audio processing stats - Frames: 1600, FPS: 19.61, MB processed: 1.48
+2025-08-03 19:04:27,056 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 500, FPS: 25.74
+2025-08-03 19:04:27,103 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 2200, FPS: 26.77
+2025-08-03 19:04:27,493 - agent.audio_stream_track - INFO - Audio processing stats - Frames: 1700, FPS: 20.58, MB processed: 1.57
+2025-08-03 19:04:29,200 - agent.audio_stream_track - INFO - Audio processing stats - Frames: 1800, FPS: 21.35, MB processed: 1.66
+2025-08-03 19:04:29,346 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 2300, FPS: 27.24
+2025-08-03 19:04:29,574 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 600, FPS: 27.34
+2025-08-03 19:04:31,812 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 2400, FPS: 27.62
+2025-08-03 19:04:32,031 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 700, FPS: 28.68
+2025-08-03 19:04:33,052 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 2500, FPS: 28.36
+2025-08-03 19:04:33,171 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 1200, FPS: 15.60
+2025-08-03 19:04:33,638 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 800, FPS: 30.76
+2025-08-03 19:04:35,262 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 2600, FPS: 28.78
+2025-08-03 19:04:36,308 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 900, FPS: 31.38
+2025-08-03 19:04:37,739 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 2700, FPS: 29.09
+2025-08-03 19:04:38,777 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 1000, FPS: 32.10
+2025-08-03 19:04:39,748 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 2800, FPS: 29.52
+2025-08-03 19:04:41,340 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 1100, FPS: 32.63
+2025-08-03 19:04:42,215 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 2900, FPS: 29.80
+2025-08-03 19:04:44,265 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 1200, FPS: 32.75
+2025-08-03 19:04:44,835 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 3000, FPS: 30.02
+2025-08-03 19:04:46,983 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 1300, FPS: 33.03
+2025-08-03 19:04:47,379 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 3100, FPS: 30.25
+2025-08-03 19:04:49,309 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 1400, FPS: 33.59
+2025-08-03 19:04:49,394 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 3200, FPS: 30.63
+2025-08-03 19:04:51,266 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 3300, FPS: 31.03
+2025-08-03 19:04:51,330 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 1500, FPS: 34.32
+2025-08-03 19:04:53,464 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 3400, FPS: 31.32
+2025-08-03 19:04:53,684 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 1600, FPS: 34.74
+2025-08-03 19:04:55,306 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 3500, FPS: 31.70
+2025-08-03 19:04:55,831 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 1700, FPS: 35.27
+2025-08-03 19:04:57,503 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 1300, FPS: 12.84
+2025-08-03 19:04:57,748 - intelligence.openai.openai_intelligence - INFO - Audio stats - Frames sent: 3600, FPS: 31.90
+2025-08-03 19:04:58,482 - agent.ai_agent - INFO - Audio processing stats - Participant: Khoa, Frames: 1800, FPS: 35.39
+2025-08-03 19:04:59,304 - main - INFO - Leaving meeting and cleaning up
+2025-08-03 19:04:59,304 - agent.ai_agent - INFO - Leaving meeting
+2025-08-03 19:04:59,304 - agent.ai_agent - INFO - Meeting left successfully
+2025-08-03 19:04:59,304 - main - INFO - Leaving meeting and cleaning up
+2025-08-03 19:04:59,304 - agent.ai_agent - INFO - Leaving meeting
+2025-08-03 19:04:59,304 - agent.ai_agent - INFO - Meeting left successfully
+2025-08-03 19:04:59,333 - agent.audio_stream_track - ERROR - Error in audio processing loop: 
+2025-08-03 19:04:59,333 - agent.audio_stream_track - ERROR - Error in audio processing loop: 
+2025-08-03 19:04:59,334 - agent.audio_stream_track - ERROR - Exception details: Traceback (most recent call last):
+  File "/Volumes/Data/Software Development/Python/videosdk-openai-realtime-translator/agent/audio_stream_track.py", line 103, in _process_audio
+    ).result()
+      ^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/concurrent/futures/_base.py", line 454, in result
+    raise CancelledError()
+concurrent.futures._base.CancelledError
+
+2025-08-03 19:04:59,335 - agent.audio_stream_track - ERROR - Exception details: Traceback (most recent call last):
+  File "/Volumes/Data/Software Development/Python/videosdk-openai-realtime-translator/agent/audio_stream_track.py", line 103, in _process_audio
+    ).result()
+      ^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/concurrent/futures/_base.py", line 454, in result
+    raise CancelledError()
+concurrent.futures._base.CancelledError
+
